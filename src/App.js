@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
+import Homepage from './components/Homepage';
 import FamilyManagement from './components/FamilyManagement';
 import BuildingOverview from './components/BuildingOverview';
 import JobAssignment from './components/JobAssignment';
 import Marketplace from './components/Marketplace';
 import LuncWallet from './components/LuncWallet';
 import './App.css';
+import './styles/homepage.css';
 
 function App() {
   const [familyData, setFamilyData] = useState({
@@ -22,6 +23,9 @@ function App() {
     buildingEfficiency: 78,
     dailyLuncPool: 25000
   });
+
+  // Web3 Connection State
+  const [userConnected, setUserConnected] = useState(false);
 
   // Initialize demo data
   useEffect(() => {
@@ -79,6 +83,9 @@ function App() {
       familySize: demoCharacters.length,
       dailyEarnings: demoCharacters.reduce((sum, char) => sum + char.dailyEarnings, 0)
     }));
+
+    // Simulate user connection for demo
+    setUserConnected(true);
   }, []);
 
   return (
@@ -90,7 +97,7 @@ function App() {
               🏢 <span>Virtual Building Empire</span>
             </div>
             <div className="nav-links">
-              <Link to="/" className="nav-link">🎮 Dashboard</Link>
+              <Link to="/" className="nav-link">🏠 Home</Link>
               <Link to="/family" className="nav-link">👨‍👩‍👧‍👦 Familie</Link>
               <Link to="/building" className="nav-link">🏢 Gebäude</Link>
               <Link to="/jobs" className="nav-link">💼 Jobs</Link>
@@ -103,9 +110,10 @@ function App() {
         <main className="game-container">
           <Routes>
             <Route path="/" element={
-              <Dashboard 
+              <Homepage 
                 familyData={familyData} 
                 buildingData={buildingData}
+                userConnected={userConnected}
               />
             } />
             <Route path="/family" element={
