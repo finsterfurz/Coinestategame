@@ -1,0 +1,508 @@
+/* ===================================
+   💎 LUNC WALLET STYLES
+   ===================================
+   
+   Komponente: LuncWallet.js
+   Zweck: LUNC Gaming Rewards Display
+*/
+
+/* ===================================
+   1. BASE WALLET STYLES
+   =================================== */
+
+.lunc-wallet {
+  position: relative;
+}
+
+/* ===================================
+   2. WALLET DISPLAY
+   =================================== */
+
+.wallet-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(145deg, #fff9e5, #ffeaa7);
+  border: 2px solid #ffd700;
+  border-radius: 25px;
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  min-width: 180px;
+}
+
+.wallet-display:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  border-color: #ffed4e;
+}
+
+.wallet-display.animating {
+  animation: balanceUpdate 0.5s ease;
+}
+
+@keyframes balanceUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Wallet Icon */
+.wallet-icon {
+  font-size: 1.5rem;
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+}
+
+/* Wallet Content */
+.wallet-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.wallet-balance {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1;
+}
+
+.balance-amount {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #b8860b;
+  font-family: 'Courier New', monospace;
+}
+
+.balance-currency {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #996515;
+  text-transform: uppercase;
+}
+
+.wallet-label {
+  font-size: 0.75rem;
+  color: #b8860b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Wallet Toggle */
+.wallet-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-icon {
+  font-size: 0.8rem;
+  color: #b8860b;
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* ===================================
+   3. WALLET DETAILS DROPDOWN
+   =================================== */
+
+.wallet-details {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border: 2px solid #f8f9fa;
+  min-width: 350px;
+  max-width: 400px;
+  margin-top: 10px;
+  animation: dropdownSlide 0.3s ease;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================================
+   4. BALANCE BREAKDOWN
+   =================================== */
+
+.balance-breakdown {
+  padding: 20px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.balance-breakdown h4 {
+  color: var(--primary-color, #667eea);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.breakdown-label {
+  font-size: 0.9rem;
+  color: var(--gray, #6c757d);
+  font-weight: 500;
+}
+
+.breakdown-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dark-gray, #343a40);
+  font-family: 'Courier New', monospace;
+}
+
+.breakdown-value.positive {
+  color: var(--success-color, #28a745);
+}
+
+.breakdown-value.negative {
+  color: var(--danger-color, #dc3545);
+}
+
+/* ===================================
+   5. RECENT TRANSACTIONS
+   =================================== */
+
+.recent-transactions {
+  padding: 20px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.recent-transactions h4 {
+  color: var(--primary-color, #667eea);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9ff;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.transaction-item:hover {
+  background: #e3e7ff;
+  transform: translateX(5px);
+}
+
+.transaction-icon {
+  font-size: 1.2rem;
+  width: 30px;
+  text-align: center;
+}
+
+.transaction-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.transaction-source {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dark-gray, #343a40);
+  line-height: 1.2;
+}
+
+.transaction-character {
+  font-size: 0.8rem;
+  color: var(--primary-color, #667eea);
+  font-weight: 500;
+}
+
+.transaction-time {
+  font-size: 0.75rem;
+  color: var(--gray, #6c757d);
+}
+
+.transaction-amount {
+  font-size: 0.9rem;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-align: right;
+}
+
+/* Transactions Footer */
+.transactions-footer {
+  text-align: center;
+  border-top: 1px solid #e9ecef;
+  padding-top: 10px;
+}
+
+.view-all-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color, #667eea);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--secondary-color, #764ba2);
+}
+
+/* ===================================
+   6. WALLET ACTIONS
+   =================================== */
+
+.wallet-actions {
+  padding: 20px;
+  display: flex;
+  gap: 10px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.wallet-action {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.wallet-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-action.claim {
+  background: var(--success-color, #28a745);
+  color: var(--white, #ffffff);
+}
+
+.wallet-action.claim:hover {
+  background: #218838;
+}
+
+.wallet-action.withdraw {
+  background: var(--warning-color, #ffc107);
+  color: var(--dark-gray, #343a40);
+}
+
+.wallet-action.withdraw:hover {
+  background: #e0a800;
+}
+
+.wallet-action.stats {
+  background: var(--info-color, #17a2b8);
+  color: var(--white, #ffffff);
+}
+
+.wallet-action.stats:hover {
+  background: #138496;
+}
+
+/* ===================================
+   7. WALLET DISCLAIMER
+   =================================== */
+
+.wallet-disclaimer {
+  padding: 15px 20px;
+  background: #f8f9ff;
+}
+
+.wallet-disclaimer p {
+  font-size: 0.75rem;
+  color: var(--gray, #6c757d);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.wallet-disclaimer strong {
+  color: var(--primary-color, #667eea);
+}
+
+/* ===================================
+   8. RESPONSIVE DESIGN
+   =================================== */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .wallet-display {
+    min-width: 160px;
+    padding: 10px 15px;
+  }
+  
+  .balance-amount {
+    font-size: 1.1rem;
+  }
+  
+  .wallet-details {
+    min-width: 300px;
+    right: -20px;
+  }
+  
+  .wallet-actions {
+    flex-direction: column;
+  }
+  
+  .wallet-action {
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .wallet-display {
+    min-width: 140px;
+    padding: 8px 12px;
+  }
+  
+  .wallet-icon {
+    font-size: 1.2rem;
+  }
+  
+  .balance-amount {
+    font-size: 1rem;
+  }
+  
+  .balance-currency {
+    font-size: 0.8rem;
+  }
+  
+  .wallet-label {
+    font-size: 0.7rem;
+  }
+  
+  .wallet-details {
+    min-width: 280px;
+    right: -50px;
+    max-width: calc(100vw - 40px);
+  }
+  
+  .balance-breakdown,
+  .recent-transactions,
+  .wallet-actions {
+    padding: 15px;
+  }
+  
+  .transaction-item {
+    padding: 10px;
+  }
+}
+
+/* ===================================
+   9. ACCESSIBILITY
+   =================================== */
+
+.wallet-display:focus,
+.wallet-action:focus,
+.view-all-btn:focus {
+  outline: 2px solid var(--primary-color, #667eea);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .wallet-display {
+    border-width: 3px;
+  }
+  
+  .wallet-action {
+    border: 2px solid;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .wallet-display,
+  .wallet-action,
+  .transaction-item {
+    transition: none;
+  }
+  
+  .wallet-display:hover,
+  .wallet-action:hover {
+    transform: none;
+  }
+  
+  .wallet-icon {
+    animation: none;
+  }
+  
+  .balance-update,
+  .dropdownSlide {
+    animation: none;
+  }
+}
+
+/* ===================================
+   10. CUSTOM SCROLLBAR
+   =================================== */
+
+.transactions-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transactions-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.transactions-list::-webkit-scrollbar-thumb {
+  background: var(--primary-color, #667eea);
+  border-radius: 3px;
+}
+
+.transactions-list::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color, #764ba2);
+}
