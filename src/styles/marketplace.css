@@ -1,0 +1,1055 @@
+/* ===================================
+   🛒 MARKETPLACE STYLES
+   ===================================
+   
+   Komponente: Marketplace.js
+   Zweck: NFT Character Trading Platform
+*/
+
+/* ===================================
+   1. BASE MARKETPLACE STYLES
+   =================================== */
+
+.marketplace {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+/* ===================================
+   2. MARKETPLACE HEADER
+   =================================== */
+
+.marketplace-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #f8f9fa;
+}
+
+.marketplace-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary-color, #667eea);
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.marketplace-subtitle {
+  font-size: 1.2rem;
+  color: var(--gray, #6c757d);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===================================
+   3. MARKETPLACE STATS
+   =================================== */
+
+.marketplace-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+  border-left: 5px solid var(--gray, #6c757d);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.15));
+}
+
+.stat-card.primary {
+  border-left-color: var(--primary-color, #667eea);
+}
+
+.stat-card.success {
+  border-left-color: var(--success-color, #28a745);
+}
+
+.stat-card.warning {
+  border-left-color: var(--warning-color, #ffc107);
+}
+
+.stat-card.info {
+  border-left-color: var(--info-color, #17a2b8);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.8;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--dark-gray, #343a40);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: var(--gray, #6c757d);
+  font-weight: 500;
+}
+
+/* ===================================
+   4. MARKETPLACE TABS
+   =================================== */
+
+.marketplace-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  background: var(--white, #ffffff);
+  padding: 20px;
+  border-radius: var(--border-radius, 15px);
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+}
+
+.tab-btn {
+  padding: 15px 30px;
+  border: 2px solid #dee2e6;
+  background: var(--white, #ffffff);
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--gray, #6c757d);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.tab-btn:hover {
+  border-color: var(--primary-color, #667eea);
+  color: var(--primary-color, #667eea);
+  transform: translateY(-2px);
+}
+
+.tab-btn.active {
+  background: var(--primary-color, #667eea);
+  color: var(--white, #ffffff);
+  border-color: var(--primary-color, #667eea);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* ===================================
+   5. MARKETPLACE CONTROLS
+   =================================== */
+
+.marketplace-controls {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.filter-section {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dark-gray, #343a40);
+}
+
+.control-select {
+  padding: 10px 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--white, #ffffff);
+  color: var(--dark-gray, #343a40);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+.control-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #667eea);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.control-select:hover {
+  border-color: var(--primary-color, #667eea);
+}
+
+.price-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.price-input {
+  width: 80px;
+  padding: 8px 12px;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.price-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #667eea);
+}
+
+.refresh-btn {
+  padding: 12px 24px;
+  background: var(--accent-color, #ffc107);
+  color: var(--dark-gray, #343a40);
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh-btn:hover {
+  background: #ffcd3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+
+/* ===================================
+   6. MARKETPLACE LISTINGS
+   =================================== */
+
+.marketplace-listings {
+  margin-bottom: 40px;
+}
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+/* ===================================
+   7. LISTING CARDS
+   =================================== */
+
+.listing-card {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  padding: 25px;
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.listing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--box-shadow-hover, 0 12px 40px rgba(0, 0, 0, 0.15));
+}
+
+/* Listing Rarity Borders */
+.listing-card.legendary {
+  border-color: #ffd700;
+  background: linear-gradient(145deg, #fff9e5, var(--white));
+}
+
+.listing-card.rare {
+  border-color: #9d4edd;
+  background: linear-gradient(145deg, #f3e8ff, var(--white));
+}
+
+.listing-card.common {
+  border-color: #6c757d;
+  background: linear-gradient(145deg, #f8f9fa, var(--white));
+}
+
+/* Featured Badge */
+.featured-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(145deg, var(--accent-color, #ffc107), #ffcd3c);
+  color: var(--dark-gray, #343a40);
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+  animation: featuredPulse 2s ease-in-out infinite;
+}
+
+@keyframes featuredPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.listing-card.featured {
+  box-shadow: 0 8px 30px rgba(255, 193, 7, 0.2);
+}
+
+.listing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.character-rarity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rarity-icon {
+  font-size: 1.5rem;
+}
+
+.rarity-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray, #6c757d);
+}
+
+.listing-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.price-amount {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--success-color, #28a745);
+  line-height: 1;
+  font-family: 'Courier New', monospace;
+}
+
+.price-currency {
+  font-size: 0.8rem;
+  color: var(--gray, #6c757d);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Character Info */
+.character-info {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.character-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-gray, #343a40);
+  margin: 0 0 5px 0;
+}
+
+.character-job {
+  font-size: 1rem;
+  color: var(--primary-color, #667eea);
+  font-weight: 600;
+  margin: 0 0 3px 0;
+}
+
+.character-department {
+  font-size: 0.9rem;
+  color: var(--gray, #6c757d);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Character Stats */
+.character-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--gray, #6c757d);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 0.9rem;
+  color: var(--dark-gray, #343a40);
+  font-weight: 600;
+}
+
+/* Listing Footer */
+.listing-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-top: 2px solid #f0f0f0;
+  padding-top: 15px;
+}
+
+.listing-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.seller {
+  font-size: 0.8rem;
+  color: var(--gray, #6c757d);
+  font-family: 'Courier New', monospace;
+}
+
+.listed-time {
+  font-size: 0.8rem;
+  color: var(--warning-color, #ffc107);
+  font-weight: 600;
+}
+
+.buy-btn {
+  width: 100%;
+  padding: 15px 25px;
+  background: linear-gradient(145deg, var(--success-color, #28a745), #20c997);
+  color: var(--white, #ffffff);
+  border: none;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.buy-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #218838, #1e7e34);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.buy-btn:disabled {
+  background: var(--gray, #6c757d);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===================================
+   8. SELL SECTION
+   =================================== */
+
+.sell-section h2,
+.history-section h2 {
+  color: var(--primary-color, #667eea);
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.sell-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Character Selection */
+.character-selection h3 {
+  color: var(--dark-gray, #343a40);
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.sellable-characters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.sellable-character {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  padding: 20px;
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 3px solid transparent;
+}
+
+.sellable-character:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.15));
+}
+
+.sellable-character.selected {
+  border-color: var(--primary-color, #667eea);
+  background: linear-gradient(145deg, #f8f9ff, var(--white));
+  transform: translateY(-8px);
+}
+
+.sellable-character.legendary {
+  border-color: #ffd700;
+}
+
+.sellable-character.rare {
+  border-color: #9d4edd;
+}
+
+.sellable-character.common {
+  border-color: #6c757d;
+}
+
+.char-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.char-header h4 {
+  color: var(--dark-gray, #343a40);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.char-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.char-details p {
+  font-size: 0.9rem;
+  color: var(--gray, #6c757d);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Price Setting */
+.price-setting {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  padding: 30px;
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.price-setting h3 {
+  color: var(--dark-gray, #343a40);
+  font-size: 1.3rem;
+  margin-bottom: 25px;
+}
+
+.price-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.suggested-prices h4 {
+  color: var(--primary-color, #667eea);
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.price-suggestions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.price-suggestion {
+  padding: 12px 20px;
+  border: 2px solid #dee2e6;
+  background: var(--white, #ffffff);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--dark-gray, #343a40);
+}
+
+.price-suggestion:hover {
+  border-color: var(--primary-color, #667eea);
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.custom-price label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark-gray, #343a40);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.price-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sell-price-input {
+  flex: 1;
+  padding: 15px 20px;
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+
+.sell-price-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #667eea);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.currency-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--dark-gray, #343a40);
+}
+
+/* Price Breakdown */
+.price-breakdown {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.breakdown-item.fee {
+  color: var(--warning-color, #ffc107);
+}
+
+.breakdown-item.total {
+  font-weight: bold;
+  color: var(--success-color, #28a745);
+  font-size: 1.1rem;
+  border-top: 2px solid #dee2e6;
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.sell-button {
+  width: 100%;
+  padding: 18px 30px;
+  background: linear-gradient(145deg, var(--warning-color, #ffc107), #ffcd3c);
+  color: var(--dark-gray, #343a40);
+  border: none;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sell-button:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ffcd3c, #ffd54f);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+}
+
+.sell-button:disabled {
+  background: var(--gray, #6c757d);
+  color: var(--white, #ffffff);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===================================
+   9. HISTORY SECTION
+   =================================== */
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.history-item {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius, 15px);
+  padding: 20px;
+  box-shadow: var(--box-shadow, 0 5px 20px rgba(0, 0, 0, 0.1));
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.history-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--box-shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.15));
+}
+
+.history-item.purchase {
+  border-left: 5px solid var(--success-color, #28a745);
+}
+
+.history-item.sale {
+  border-left: 5px solid var(--warning-color, #ffc107);
+}
+
+.tx-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tx-info {
+  flex: 1;
+}
+
+.tx-info h4 {
+  color: var(--dark-gray, #343a40);
+  font-size: 1.1rem;
+  margin: 0 0 8px 0;
+}
+
+.tx-info p {
+  font-size: 0.9rem;
+  color: var(--gray, #6c757d);
+  margin: 0;
+  font-weight: 500;
+}
+
+.tx-status {
+  text-align: right;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.completed {
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--success-color, #28a745);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.status-badge.pending {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--warning-color, #ffc107);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+/* ===================================
+   10. NO CONTENT STATES
+   =================================== */
+
+.no-listings,
+.no-sellable,
+.no-history {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(145deg, #f8f9ff, #e3e7ff);
+  border-radius: var(--border-radius, 15px);
+  border: 2px dashed #d1d9ff;
+  margin: 40px 0;
+}
+
+.no-listings h3,
+.no-sellable h3,
+.no-history h3 {
+  color: var(--primary-color, #667eea);
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.no-listings p,
+.no-sellable p,
+.no-history p {
+  color: var(--gray, #6c757d);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===================================
+   11. RESPONSIVE DESIGN
+   =================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .listings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  
+  .sellable-characters {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .marketplace {
+    padding: 20px 15px;
+  }
+  
+  .marketplace-title {
+    font-size: 2rem;
+  }
+  
+  .marketplace-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .marketplace-tabs {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .tab-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .marketplace-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-section {
+    justify-content: center;
+  }
+  
+  .refresh-btn {
+    align-self: center;
+  }
+  
+  .listings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sellable-characters {
+    grid-template-columns: 1fr;
+  }
+  
+  .price-suggestions {
+    justify-content: center;
+  }
+  
+  .price-range {
+    justify-content: center;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .marketplace-title {
+    font-size: 1.8rem;
+  }
+  
+  .marketplace-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .control-select {
+    min-width: auto;
+  }
+  
+  .listing-card {
+    padding: 20px;
+  }
+  
+  .listing-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .character-stats {
+    padding: 12px;
+  }
+  
+  .price-suggestions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .price-suggestion {
+    width: 100%;
+    max-width: 200px;
+    text-align: center;
+  }
+  
+  .price-input-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sell-price-input {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .history-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .tx-status {
+    text-align: center;
+  }
+}
+
+/* ===================================
+   12. ACCESSIBILITY
+   =================================== */
+
+.tab-btn:focus,
+.buy-btn:focus,
+.sell-button:focus,
+.price-suggestion:focus,
+.sell-price-input:focus,
+.control-select:focus,
+.refresh-btn:focus {
+  outline: 2px solid var(--primary-color, #667eea);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .listing-card,
+  .sellable-character {
+    border-width: 2px;
+  }
+  
+  .buy-btn,
+  .sell-button {
+    border: 2px solid;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .listing-card,
+  .sellable-character,
+  .buy-btn,
+  .sell-button,
+  .history-item {
+    transition: none;
+  }
+  
+  .listing-card:hover,
+  .sellable-character:hover,
+  .buy-btn:hover,
+  .sell-button:hover {
+    transform: none;
+  }
+  
+  .featuredPulse,
+  .slideIn {
+    animation: none;
+  }
+}

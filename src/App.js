@@ -8,10 +8,19 @@ import Marketplace from './components/Marketplace';
 import LuncWallet from './components/LuncWallet';
 import WalletConnection from './components/WalletConnection';
 import CharacterMinting from './components/CharacterMinting';
+
+// ===================================
+// 🎨 IMPORT ALL STYLES
+// ===================================
 import './App.css';
 import './styles/homepage.css';
 import './styles/wallet.css';
 import './styles/minting.css';
+import './styles/family.css';
+import './styles/luncwallet.css';
+import './styles/building.css';
+import './styles/jobs.css';
+import './styles/marketplace.css';
 
 function App() {
   // ===================================
@@ -83,6 +92,18 @@ function App() {
           happiness: 88,
           working: false,
           department: "IT",
+          mintedAt: new Date().toISOString()
+        },
+        {
+          id: 4,
+          name: "Lisa Legend",
+          type: "legendary",
+          job: "Master Architect",
+          level: 25,
+          dailyEarnings: 150,
+          happiness: 95,
+          working: true,
+          department: "Architecture",
           mintedAt: new Date().toISOString()
         }
       ];
