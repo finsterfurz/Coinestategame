@@ -1,0 +1,297 @@
+# 🐳 Virtual Building Empire - Docker Compose Configuration
+# Complete development environment with all services
+
+version: '3.8'
+
+services:
+  # 🟢 Frontend React Application
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: development
+    container_name: vbe-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_WS_URL=ws://localhost:8000
+    depends_on:
+      - hardhat
+      - ipfs
+    networks:
+      - vbe-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  # ⚒️ Hardhat Local Blockchain
+  hardhat:
+    build:
+      context: .
+      dockerfile: Dockerfile.hardhat
+    container_name: vbe-hardhat
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./contracts:/app/contracts
+      - ./scripts:/app/scripts
+      - ./hardhat.config.js:/app/hardhat.config.js
+      - ./package.json:/app/package.json
+      - hardhat-cache:/app/cache
+      - hardhat-artifacts:/app/artifacts
+    environment:
+      - NODE_ENV=development
+    command: npx hardhat node --hostname 0.0.0.0
+    networks:
+      - vbe-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 🗄️ IPFS for Metadata Storage
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: vbe-ipfs
+    ports:
+      - "4001:4001"  # P2P
+      - "5001:5001"  # API
+      - "8080:8080"  # Gateway
+    volumes:
+      - ipfs-data:/data/ipfs
+      - ipfs-staging:/export
+    environment:
+      - IPFS_PROFILE=server
+    networks:
+      - vbe-network
+    restart: unless-stopped
+    command: >
+      sh -c "ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"*\"]' &&
+             ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '[\"PUT\", \"POST\", \"GET\"]' &&
+             ipfs daemon --migrate=true"
+
+  # 🗃️ PostgreSQL Database (for analytics/caching)
+  database:
+    image: postgres:15-alpine
+    container_name: vbe-database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=virtual_building_empire
+      - POSTGRES_USER=vbe_user
+      - POSTGRES_PASSWORD=vbe_password
+    networks:
+      - vbe-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vbe_user -d virtual_building_empire"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 🔴 Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: vbe-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - vbe-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 📊 Analytics API (Node.js)
+  analytics-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: vbe-analytics
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://vbe_user:vbe_password@database:5432/virtual_building_empire
+      - REDIS_URL=redis://redis:6379
+      - IPFS_API_URL=http://ipfs:5001
+      - HARDHAT_RPC_URL=http://hardhat:8545
+    depends_on:
+      - database
+      - redis
+      - hardhat
+    networks:
+      - vbe-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 📈 Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: vbe-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    depends_on:
+      - database
+    networks:
+      - vbe-network
+    restart: unless-stopped
+
+  # 📊 Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: vbe-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - vbe-network
+    restart: unless-stopped
+
+  # 🔄 Reverse Proxy (Traefik)
+  traefik:
+    image: traefik:v3.0
+    container_name: vbe-traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - vbe-network
+    restart: unless-stopped
+
+  # 🧪 Testing Environment
+  e2e-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    container_name: vbe-e2e-tests
+    volumes:
+      - ./e2e:/app/e2e
+      - ./test-results:/app/test-results
+    environment:
+      - BASE_URL=http://frontend:3000
+      - BLOCKCHAIN_URL=http://hardhat:8545
+    depends_on:
+      - frontend
+      - hardhat
+    networks:
+      - vbe-network
+    profiles:
+      - testing
+    command: npm run test:e2e
+
+  # 📱 Mobile Testing
+  mobile-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.mobile
+    container_name: vbe-mobile-tests
+    volumes:
+      - ./mobile-tests:/app/tests
+      - ./test-results:/app/test-results
+    environment:
+      - BASE_URL=http://frontend:3000
+    depends_on:
+      - frontend
+    networks:
+      - vbe-network
+    profiles:
+      - testing
+    privileged: true
+
+# 🌐 Networks
+networks:
+  vbe-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# 💾 Persistent Volumes
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  ipfs-data:
+    driver: local
+  ipfs-staging:
+    driver: local
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  hardhat-cache:
+    driver: local
+  hardhat-artifacts:
+    driver: local
+
+# 🏷️ Extension Fields for Reusability
+x-common-variables: &common-variables
+  NODE_ENV: development
+  TZ: UTC
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# 📋 Service Health Checks
+x-healthcheck: &default-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s

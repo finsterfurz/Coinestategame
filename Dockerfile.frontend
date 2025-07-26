@@ -1,0 +1,206 @@
+# 🐳 Virtual Building Empire - Frontend Dockerfile
+# Multi-stage build for React application
+
+# 🏗️ Stage 1: Development
+FROM node:18-alpine AS development
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/cache/apk/*
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=development
+
+# Copy source code
+COPY . .
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Change ownership of app directory
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Start development server
+CMD ["npm", "start"]
+
+# 🏗️ Stage 2: Build
+FROM node:18-alpine AS build
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    python3 \
+    make \
+    g++
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including devDependencies)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Set build environment variables
+ENV NODE_ENV=production
+ENV GENERATE_SOURCEMAP=false
+ENV INLINE_RUNTIME_CHUNK=false
+ENV IMAGE_INLINE_SIZE_LIMIT=0
+
+# Build the application
+RUN npm run build
+
+# Remove development dependencies
+RUN npm prune --production
+
+# 🏗️ Stage 3: Production
+FROM nginx:1.25-alpine AS production
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Copy built application
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
+
+# Create cache directory
+RUN mkdir -p /var/cache/nginx && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d
+
+# Switch to non-root user
+USER nginx
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:80 || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+# 🏗️ Stage 4: Testing
+FROM node:18-alpine AS testing
+
+WORKDIR /app
+
+# Install system dependencies + testing tools
+RUN apk add --no-cache \
+    git \
+    python3 \
+    make \
+    g++ \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Install global testing tools
+RUN npm install -g @playwright/test lighthouse-ci
+
+# Copy source code
+COPY . .
+
+# Set environment for testing
+ENV NODE_ENV=test
+ENV CI=true
+ENV CHROMIUM_PATH=/usr/bin/chromium-browser
+
+# Install Playwright browsers
+RUN npx playwright install --with-deps
+
+# Run tests
+CMD ["npm", "run", "test:ci"]
+
+# 🏗️ Stage 5: Analysis
+FROM node:18-alpine AS analysis
+
+WORKDIR /app
+
+# Install analysis tools
+RUN npm install -g \
+    webpack-bundle-analyzer \
+    source-map-explorer \
+    bundlephobia-cli
+
+# Copy built application
+COPY --from=build /app/build ./build
+COPY --from=build /app/package*.json ./
+
+# Analyze bundle
+CMD ["npm", "run", "analyze"]
+
+# 📊 Stage 6: Monitoring
+FROM node:18-alpine AS monitoring
+
+WORKDIR /app
+
+# Install monitoring dependencies
+RUN apk add --no-cache curl
+RUN npm install -g pm2
+
+# Copy application
+COPY --from=build /app/build ./build
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules ./node_modules
+
+# Create PM2 ecosystem file
+COPY ecosystem.config.js ./
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Start with PM2
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]
+
+# 🔧 Labels for better management
+LABEL maintainer="Virtual Building Empire Team <team@virtualbuilding.game>"
+LABEL version="1.0.0"
+LABEL description="Virtual Building Empire Frontend - React Web3 Gaming Application"
+LABEL org.opencontainers.image.title="Virtual Building Empire Frontend"
+LABEL org.opencontainers.image.description="React-based frontend for Virtual Building Empire Web3 game"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.vendor="Virtual Building Empire"
+LABEL org.opencontainers.image.source="https://github.com/finsterfurz/Coinestategame"
+LABEL org.opencontainers.image.documentation="https://github.com/finsterfurz/Coinestategame/blob/main/README.md"
+LABEL org.opencontainers.image.licenses="MIT"
