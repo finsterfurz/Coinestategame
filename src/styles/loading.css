@@ -1,0 +1,283 @@
+/* ===================================
+   🔄 LOADING SPINNER STYLES
+   =================================== */
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading-spinner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Ring Animation */
+.loading-ring {
+  display: inline-block;
+  position: relative;
+}
+
+.loading-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  border: 4px solid transparent;
+  border-radius: 50%;
+  animation: loading-ring-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.loading-ring div:nth-child(1) { animation-delay: -0.45s; }
+.loading-ring div:nth-child(2) { animation-delay: -0.3s; }
+.loading-ring div:nth-child(3) { animation-delay: -0.15s; }
+
+@keyframes loading-ring-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Size Variants */
+.loading-small .loading-ring {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-small .loading-ring div {
+  width: 20px;
+  height: 20px;
+  margin: 2px;
+  border-width: 2px;
+}
+
+.loading-medium .loading-ring {
+  width: 40px;
+  height: 40px;
+}
+
+.loading-medium .loading-ring div {
+  width: 32px;
+  height: 32px;
+  margin: 4px;
+  border-width: 3px;
+}
+
+.loading-large .loading-ring {
+  width: 64px;
+  height: 64px;
+}
+
+.loading-large .loading-ring div {
+  width: 56px;
+  height: 56px;
+  margin: 4px;
+  border-width: 4px;
+}
+
+/* Color Variants */
+.loading-primary .loading-ring div {
+  border-top-color: #4f46e5;
+  border-right-color: #4f46e5;
+}
+
+.loading-secondary .loading-ring div {
+  border-top-color: #06b6d4;
+  border-right-color: #06b6d4;
+}
+
+.loading-success .loading-ring div {
+  border-top-color: #10b981;
+  border-right-color: #10b981;
+}
+
+.loading-warning .loading-ring div {
+  border-top-color: #f59e0b;
+  border-right-color: #f59e0b;
+}
+
+/* Loading Message */
+.loading-message {
+  font-size: 0.9rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.loading-large .loading-message {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-overlay .loading-message {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* ===================================
+   🛡️ ERROR BOUNDARY STYLES
+   =================================== */
+
+.error-boundary {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+  padding: 2rem;
+}
+
+.error-container {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.error-container h2 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.error-container p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.error-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.error-btn.primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.error-btn.primary:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.error-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.error-btn.secondary:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.error-details {
+  text-align: left;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.error-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.error-stack {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.75rem;
+}
+
+.error-stack h4 {
+  color: #374151;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.error-stack pre {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.error-help {
+  text-align: left;
+  background: #eff6ff;
+  border-left: 4px solid #3b82f6;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.error-help ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.error-help li {
+  margin: 0.25rem 0;
+  color: #374151;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .error-container {
+    padding: 2rem;
+    margin: 1rem;
+  }
+  
+  .error-actions {
+    flex-direction: column;
+  }
+  
+  .error-btn {
+    width: 100%;
+  }
+}
