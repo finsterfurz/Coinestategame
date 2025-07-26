@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "name": "virtual-building-empire",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_NAME": "Virtual Building Empire",
+    "REACT_APP_VERSION": "2.0.0",
+    "GENERATE_SOURCEMAP": "false"
+  },
+  "build": {
+    "env": {
+      "GENERATE_SOURCEMAP": "false"
+    }
+  },
+  "installCommand": "npm install --production=false",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": "create-react-app",
+  "cleanUrls": true,
+  "trailingSlash": false
+}
