@@ -1,82 +1,118 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
  * @title LuncToken
- * @dev Virtual Building Empire LUNC Token Contract
- * @author Virtual Building Empire Team
+ * @dev LUNC reward token for Virtual Building Empire
+ * Features: Mintable, Burnable, Pausable, Access Control
  */
-contract LuncToken is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ReentrancyGuard {
+contract LuncToken is
+    Initializable,
+    ERC20Upgradeable,
+    ERC20BurnableUpgradeable,
+    ERC20PausableUpgradeable,
+    AccessControlUpgradeable,
+    ReentrancyGuardUpgradeable,
+    UUPSUpgradeable
+{
     // ===================================
-    // ROLES
+    // 🔐 ROLES & CONSTANTS
     // ===================================
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant REWARDS_ROLE = keccak256("REWARDS_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+    
+    uint256 public constant MAX_SUPPLY = 1_000_000_000 * 10**18; // 1 billion tokens
+    uint256 public constant DAILY_REWARD_POOL = 100_000 * 10**18; // 100k tokens per day
 
     // ===================================
-    // STATE VARIABLES
+    // 🗃️ STATE VARIABLES
     // ===================================
-    uint256 public constant MAX_SUPPLY = 10_000_000_000 * 10**6; // 10B tokens with 6 decimals
     
-    mapping(address => bool) public excludedFromFees;
     mapping(address => uint256) public lastRewardClaim;
+    mapping(address => bool) public gameContracts;
     
-    uint256 public rewardCooldown = 24 hours;
-    uint256 public maxRewardPerClaim = 1000 * 10**6; // 1000 LUNC
-    
-    // Events
-    event RewardsClaimed(address indexed user, uint256 amount);
-    event RewardCooldownUpdated(uint256 newCooldown);
-    event MaxRewardUpdated(uint256 newMaxReward);
-    event FeesExcluded(address indexed account, bool excluded);
+    uint256 public totalRewardsDistributed;
+    uint256 public dailyRewardPool;
+    bool public rewardsEnabled;
 
     // ===================================
-    // CONSTRUCTOR
+    // 📡 EVENTS
     // ===================================
-    constructor(
+    
+    event RewardsClaimed(address indexed user, uint256 amount);
+    event GameContractAdded(address indexed gameContract);
+    event GameContractRemoved(address indexed gameContract);
+    event RewardsToggled(bool enabled);
+    event DailyRewardPoolUpdated(uint256 newAmount);
+
+    // ===================================
+    // 🏗️ INITIALIZATION
+    // ===================================
+    
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(
         string memory name,
         string memory symbol,
         uint256 initialSupply
-    ) ERC20(name, symbol) {
-        require(initialSupply <= MAX_SUPPLY, "Initial supply exceeds maximum");
+    ) public initializer {
+        __ERC20_init(name, symbol);
+        __ERC20Burnable_init();
+        __ERC20Pausable_init();
+        __AccessControl_init();
+        __ReentrancyGuard_init();
+        __UUPSUpgradeable_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
+
+        dailyRewardPool = DAILY_REWARD_POOL;
+        rewardsEnabled = true;
         
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(MINTER_ROLE, _msgSender());
-        _grantRole(PAUSER_ROLE, _msgSender());
-        _grantRole(REWARDS_ROLE, _msgSender());
-        
-        _mint(_msgSender(), initialSupply);
-        
-        // Exclude deployer from fees
-        excludedFromFees[_msgSender()] = true;
+        if (initialSupply > 0) {
+            _mint(msg.sender, initialSupply);
+        }
     }
 
     // ===================================
-    // TOKEN MECHANICS
+    // 🎮 GAME REWARD FUNCTIONS
     // ===================================
-    function decimals() public pure override returns (uint8) {
-        return 6;
-    }
     
-    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) nonReentrant {
+    function claimDailyRewards(address user, uint256 amount) external nonReentrant {
+        require(gameContracts[msg.sender], "Not authorized game contract");
+        require(rewardsEnabled, "Rewards are disabled");
+        require(amount > 0, "Amount must be greater than 0");
         require(totalSupply() + amount <= MAX_SUPPLY, "Would exceed max supply");
-        _mint(to, amount);
+        
+        _mint(user, amount);
+        totalRewardsDistributed += amount;
+        lastRewardClaim[user] = block.timestamp;
+        
+        emit RewardsClaimed(user, amount);
     }
     
-    function batchMint(address[] memory recipients, uint256[] memory amounts) 
-        external 
-        onlyRole(MINTER_ROLE) 
-        nonReentrant 
-    {
-        require(recipients.length == amounts.length, "Array length mismatch");
-        require(recipients.length <= 100, "Too many recipients");
+    function batchRewardUsers(
+        address[] calldata users,
+        uint256[] calldata amounts
+    ) external nonReentrant {
+        require(hasRole(MINTER_ROLE, msg.sender), "Not authorized");
+        require(users.length == amounts.length, "Arrays length mismatch");
+        require(users.length <= 100, "Too many users");
         
         uint256 totalAmount = 0;
         for (uint256 i = 0; i < amounts.length; i++) {
@@ -85,81 +121,45 @@ contract LuncToken is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, Reentr
         
         require(totalSupply() + totalAmount <= MAX_SUPPLY, "Would exceed max supply");
         
-        for (uint256 i = 0; i < recipients.length; i++) {
-            _mint(recipients[i], amounts[i]);
-        }
-    }
-
-    // ===================================
-    // REWARD SYSTEM
-    // ===================================
-    function claimDailyReward() external nonReentrant whenNotPaused {
-        require(
-            block.timestamp >= lastRewardClaim[_msgSender()] + rewardCooldown,
-            "Reward cooldown not met"
-        );
-        
-        lastRewardClaim[_msgSender()] = block.timestamp;
-        
-        // Calculate reward based on user activity (can be enhanced)
-        uint256 reward = calculateReward(_msgSender());
-        require(reward > 0, "No reward available");
-        require(reward <= maxRewardPerClaim, "Reward exceeds maximum");
-        
-        _mint(_msgSender(), reward);
-        
-        emit RewardsClaimed(_msgSender(), reward);
-    }
-    
-    function calculateReward(address user) public view returns (uint256) {
-        // Basic reward calculation - can be enhanced with game mechanics
-        uint256 baseReward = 100 * 10**6; // 100 LUNC
-        
-        // Add bonus based on balance (holder bonus)
-        uint256 balance = balanceOf(user);
-        if (balance >= 10000 * 10**6) { // 10k+ LUNC
-            baseReward = baseReward * 150 / 100; // 50% bonus
-        } else if (balance >= 1000 * 10**6) { // 1k+ LUNC
-            baseReward = baseReward * 125 / 100; // 25% bonus
-        }
-        
-        return baseReward;
-    }
-    
-    function distributeRewards(address[] memory users, uint256[] memory amounts) 
-        external 
-        onlyRole(REWARDS_ROLE) 
-        nonReentrant 
-    {
-        require(users.length == amounts.length, "Array length mismatch");
-        require(users.length <= 500, "Too many users");
-        
         for (uint256 i = 0; i < users.length; i++) {
             if (amounts[i] > 0) {
                 _mint(users[i], amounts[i]);
+                lastRewardClaim[users[i]] = block.timestamp;
                 emit RewardsClaimed(users[i], amounts[i]);
             }
         }
+        
+        totalRewardsDistributed += totalAmount;
     }
 
     // ===================================
-    // ADMIN FUNCTIONS
+    // 🔧 ADMIN FUNCTIONS
     // ===================================
-    function setRewardCooldown(uint256 newCooldown) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newCooldown >= 1 hours && newCooldown <= 7 days, "Invalid cooldown period");
-        rewardCooldown = newCooldown;
-        emit RewardCooldownUpdated(newCooldown);
+    
+    function addGameContract(address gameContract) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(gameContract != address(0), "Invalid address");
+        gameContracts[gameContract] = true;
+        emit GameContractAdded(gameContract);
     }
     
-    function setMaxRewardPerClaim(uint256 newMaxReward) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newMaxReward > 0 && newMaxReward <= 10000 * 10**6, "Invalid max reward");
-        maxRewardPerClaim = newMaxReward;
-        emit MaxRewardUpdated(newMaxReward);
+    function removeGameContract(address gameContract) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        gameContracts[gameContract] = false;
+        emit GameContractRemoved(gameContract);
     }
     
-    function setExcludedFromFees(address account, bool excluded) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        excludedFromFees[account] = excluded;
-        emit FeesExcluded(account, excluded);
+    function setDailyRewardPool(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        dailyRewardPool = newAmount;
+        emit DailyRewardPoolUpdated(newAmount);
+    }
+    
+    function toggleRewards() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        rewardsEnabled = !rewardsEnabled;
+        emit RewardsToggled(rewardsEnabled);
+    }
+    
+    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
+        require(totalSupply() + amount <= MAX_SUPPLY, "Would exceed max supply");
+        _mint(to, amount);
     }
     
     function pause() external onlyRole(PAUSER_ROLE) {
@@ -169,58 +169,42 @@ contract LuncToken is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, Reentr
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
+
+    // ===================================
+    // 🔍 VIEW FUNCTIONS
+    // ===================================
     
-    function emergencyWithdraw(address token, address to, uint256 amount) 
-        external 
-        onlyRole(DEFAULT_ADMIN_ROLE) 
-    {
-        require(token != address(this), "Cannot withdraw LUNC");
-        require(to != address(0), "Invalid recipient");
-        
-        IERC20(token).transfer(to, amount);
+    function getUserLastClaim(address user) external view returns (uint256) {
+        return lastRewardClaim[user];
+    }
+    
+    function isGameContract(address account) external view returns (bool) {
+        return gameContracts[account];
+    }
+    
+    function getRemainingSupply() external view returns (uint256) {
+        return MAX_SUPPLY - totalSupply();
+    }
+    
+    function getRewardStats() external view returns (
+        uint256 totalDistributed,
+        uint256 dailyPool,
+        bool enabled
+    ) {
+        return (totalRewardsDistributed, dailyRewardPool, rewardsEnabled);
     }
 
     // ===================================
-    // VIEW FUNCTIONS
+    // 🔨 INTERNAL FUNCTIONS
     // ===================================
-    function getRewardCooldownRemaining(address user) external view returns (uint256) {
-        uint256 lastClaim = lastRewardClaim[user];
-        if (lastClaim == 0) return 0;
-        
-        uint256 nextClaim = lastClaim + rewardCooldown;
-        if (block.timestamp >= nextClaim) return 0;
-        
-        return nextClaim - block.timestamp;
-    }
     
-    function canClaimReward(address user) external view returns (bool) {
-        return block.timestamp >= lastRewardClaim[user] + rewardCooldown;
-    }
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
     
-    function getCirculatingSupply() external view returns (uint256) {
-        // Can be enhanced to exclude locked tokens, treasury, etc.
-        return totalSupply();
-    }
-
-    // ===================================
-    // INTERNAL OVERRIDES
-    // ===================================
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 amount
-    ) internal override(ERC20, ERC20Pausable) {
+    ) internal override(ERC20Upgradeable, ERC20PausableUpgradeable) {
         super._beforeTokenTransfer(from, to, amount);
-    }
-    
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override {
-        super._afterTokenTransfer(from, to, amount);
-        
-        // Additional logic can be added here for game mechanics
-        // e.g., update user statistics, trigger events, etc.
     }
 }
