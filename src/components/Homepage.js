@@ -40,14 +40,14 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
     <div className="homepage">
       
       {/* ===================================
-          🦸 HERO SECTION - MARKETING FOCUS
+          🦸 HERO SECTION - CLEAN & FOCUSED
           ===================================
           
           Zweck: Erste Eindruck für neue Besucher
           - Projekt vorstellen
           - Wichtigste Features highlighten  
           - Call-to-Action Buttons
-          - Vertrauen durch Dubai LLC Info
+          - Fokus auf Gaming und Rewards
       */}
       <section className="hero-section">
         <div className="hero-container">
@@ -57,7 +57,7 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
             
             {/* New Launch Badge - Aufmerksamkeit erregen */}
             <div className="hero-badge">
-              ✨ NEU GELAUNCHT - FRÜHER ZUGANG VERFÜGBAR!
+              ✨ LIVE NOW - FRÜHER ZUGANG VERFÜGBAR!
             </div>
             
             {/* Haupttitel - Projekt Name */}
@@ -67,26 +67,26 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
             
             {/* Untertitel - Was ist das Projekt */}
             <h2 className="hero-subtitle">
-              Das erste Character Collection Game mit LUNC Rewards
+              Das erste NFT Character Collection Game mit echten LUNC Rewards
             </h2>
             
             {/* Beschreibung - Kurz und prägnant */}
             <p className="hero-description">
-              🎮 <strong>Sammle einzigartige NFT-Charaktere</strong> und weise sie Jobs in unserem 
-              virtuellen 25-stöckigen Gebäude zu. Verdiene täglich <strong>LUNC Token</strong> durch 
-              strategisches Gaming. <br/>
-              <span className="highlight">Keine Investitionen - nur pures Entertainment!</span>
+              🎮 <strong>Sammle einzigartige NFT-Charaktere</strong> und baue dein eigenes 
+              Immobilien-Imperium auf. Weise Jobs in unserem virtuellen 25-stöckigen Gebäude zu 
+              und verdiene täglich <strong>LUNC Token</strong> durch strategisches Gaming. <br/>
+              <span className="highlight">Pure Entertainment - Real Rewards!</span>
             </p>
             
             {/* Live Statistiken - Vertrauen aufbauen */}
             <div className="hero-stats">
               <div className="hero-stat">
                 <span className="hero-stat-number">{formatNumber(stats.totalCharacters)}</span>
-                <span className="hero-stat-label">Einzigartige Charaktere</span>
+                <span className="hero-stat-label">Einzigartige NFTs</span>
               </div>
               <div className="hero-stat">
                 <span className="hero-stat-number">{formatNumber(stats.dailyLuncPool)}</span>
-                <span className="hero-stat-label">LUNC täglich im Pool</span>
+                <span className="hero-stat-label">LUNC Pool</span>
               </div>
               <div className="hero-stat">
                 <span className="hero-stat-number">{stats.buildingFloors}</span>
@@ -105,7 +105,7 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
                 // Hier später Web3 Connection Logic
                 console.log('Start Gaming clicked');
               }}>
-                🎮 Jetzt kostenlos spielen
+                🚀 Jetzt spielen
               </button>
               
               {/* Sekundärer Button - Mehr Infos */}
@@ -113,15 +113,15 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
                 className="cta-button secondary"
                 onClick={() => setShowMoreInfo(!showMoreInfo)}
               >
-                📖 Wie funktioniert's?
+                💡 Mehr erfahren
               </button>
             </div>
             
-            {/* Legal Disclaimer - Compliance */}
+            {/* Simplified Trust Indicators */}
             <div className="hero-disclaimer">
-              🏢 <strong>Dubai LLC</strong> | 
-              🎯 <strong>Entertainment Only</strong> | 
-              💎 <strong>LUNC Gaming Rewards</strong>
+              🎯 <strong>Gaming Entertainment</strong> | 
+              💎 <strong>Real LUNC Rewards</strong> | 
+              🔒 <strong>Secure & Transparent</strong>
             </div>
           </div>
           
@@ -171,7 +171,7 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
       </section>
 
       {/* ===================================
-          🎯 FEATURES SECTION
+          🎯 FEATURES SECTION - ENHANCED
           ===================================
           
           Zweck: Kernfeatures des Spiels erklären
@@ -184,9 +184,9 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
           
           {/* Sektion Header */}
           <div className="section-header">
-            <h2 className="section-title">🎮 Einzigartige Spielmechaniken</h2>
+            <h2 className="section-title">🎮 Warum Virtual Building Empire?</h2>
             <p className="section-subtitle">
-              Was macht Virtual Building Empire anders als andere NFT-Projekte?
+              Einzigartige Gaming-Mechaniken für nachhaltigen Spielspaß und echte Belohnungen
             </p>
           </div>
           
@@ -199,19 +199,20 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
               onClick={() => setSelectedFeature(selectedFeature === 'family' ? null : 'family')}
             >
               <div className="feature-icon">👨‍👩‍👧‍👦</div>
-              <h3 className="feature-title">Familie System</h3>
+              <h3 className="feature-title">Sammle deine Familie</h3>
               <p className="feature-description">
-                Sammle mehrere Charaktere als "Familie". Größere Familien erhalten 
-                Boni von bis zu <strong>20%</strong> auf alle LUNC-Verdienste!
+                Baue eine starke Charakter-Familie auf und erhalte exklusive Boni. 
+                Größere Familien verdienen bis zu <strong>25%</strong> mehr LUNC!
               </p>
               
               {/* Erweiterte Info bei Klick */}
               {selectedFeature === 'family' && (
                 <div className="feature-details">
                   <ul>
-                    <li>🏠 <strong>Kleine Familie (1-3):</strong> Perfekt für Einsteiger</li>
-                    <li>🏡 <strong>Mittlere Familie (4-7):</strong> 5% Bonus auf alle Verdienste</li>
-                    <li>🏰 <strong>Große Familie (8+):</strong> 10-20% Bonus + exklusive Jobs</li>
+                    <li>🏠 <strong>Starter Familie (1-3):</strong> Perfekt für den Einstieg</li>
+                    <li>🏡 <strong>Große Familie (4-7):</strong> 10% Bonus auf alle Verdienste</li>
+                    <li>🏰 <strong>Mega Familie (8+):</strong> 25% Bonus + VIP Jobs</li>
+                    <li>🎁 <strong>Familienbonus:</strong> Spezielle Events und Belohnungen</li>
                   </ul>
                 </div>
               )}
@@ -223,19 +224,19 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
               onClick={() => setSelectedFeature(selectedFeature === 'building' ? null : 'building')}
             >
               <div className="feature-icon">🏢</div>
-              <h3 className="feature-title">Ein Gebäude für Alle</h3>
+              <h3 className="feature-title">Ein Gebäude - Alle zusammen</h3>
               <p className="feature-description">
                 Alle 2,500 NFT-Charaktere arbeiten im <strong>gleichen virtuellen Gebäude</strong>. 
-                Konkurriere täglich mit anderen Familien um die besten Jobs!
+                Täglich neue Herausforderungen und <strong>Live-Konkurrenz</strong> um die besten Jobs!
               </p>
               
               {selectedFeature === 'building' && (
                 <div className="feature-details">
                   <ul>
-                    <li>🏢 <strong>25. Stock:</strong> Management (200 LUNC/Tag)</li>
-                    <li>💼 <strong>15.-24. Stock:</strong> Professional (50-80 LUNC/Tag)</li>
-                    <li>🔧 <strong>5.-14. Stock:</strong> Operations (20-45 LUNC/Tag)</li>
-                    <li>🍽️ <strong>1.-4. Stock:</strong> Service (10-30 LUNC/Tag)</li>
+                    <li>🏢 <strong>25. Stock:</strong> CEO Level (250 LUNC/Tag)</li>
+                    <li>💼 <strong>15.-24. Stock:</strong> Management (80-150 LUNC/Tag)</li>
+                    <li>🔧 <strong>5.-14. Stock:</strong> Operations (30-70 LUNC/Tag)</li>
+                    <li>🍽️ <strong>1.-4. Stock:</strong> Service (15-40 LUNC/Tag)</li>
                   </ul>
                 </div>
               )}
@@ -247,43 +248,43 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
               onClick={() => setSelectedFeature(selectedFeature === 'rewards' ? null : 'rewards')}
             >
               <div className="feature-icon">💰</div>
-              <h3 className="feature-title">Tägliche LUNC Rewards</h3>
+              <h3 className="feature-title">Echte LUNC Rewards</h3>
               <p className="feature-description">
-                Verdiene jeden Tag echte <strong>LUNC Token</strong> basierend auf der 
-                Performance deiner Charaktere. Keine Investment-Risiken!
+                Verdiene täglich echte <strong>LUNC Token</strong> durch aktives Gaming. 
+                Performance-basierte Belohnungen ohne Investment-Risiken!
               </p>
               
               {selectedFeature === 'rewards' && (
                 <div className="feature-details">
                   <ul>
-                    <li>💎 <strong>Legendary Characters:</strong> 100-200 LUNC/Tag</li>
-                    <li>⭐ <strong>Rare Characters:</strong> 40-80 LUNC/Tag</li>
-                    <li>👤 <strong>Common Characters:</strong> 10-40 LUNC/Tag</li>
-                    <li>🎯 <strong>Familie Boni:</strong> Bis zu 20% Extra</li>
+                    <li>💎 <strong>Legendary NFTs:</strong> 120-250 LUNC/Tag</li>
+                    <li>⭐ <strong>Rare NFTs:</strong> 50-100 LUNC/Tag</li>
+                    <li>👤 <strong>Common NFTs:</strong> 15-50 LUNC/Tag</li>
+                    <li>🎯 <strong>Performance Bonus:</strong> Bis zu 40% Extra</li>
                   </ul>
                 </div>
               )}
             </div>
             
-            {/* Feature 4: Dubai LLC Compliance */}
+            {/* Feature 4: Community & Security */}
             <div 
-              className={`feature-card ${selectedFeature === 'legal' ? 'active' : ''}`}
-              onClick={() => setSelectedFeature(selectedFeature === 'legal' ? null : 'legal')}
+              className={`feature-card ${selectedFeature === 'community' ? 'active' : ''}`}
+              onClick={() => setSelectedFeature(selectedFeature === 'community' ? null : 'community')}
             >
-              <div className="feature-icon">⚖️</div>
-              <h3 className="feature-title">Vollständig Konform</h3>
+              <div className="feature-icon">🛡️</div>
+              <h3 className="feature-title">Sicher & Community-driven</h3>
               <p className="feature-description">
-                <strong>Dubai LLC</strong> Struktur mit klarem Gaming-Fokus. 
-                Keine Investment-Sprache, nur Entertainment!
+                <strong>Transparente Blockchain-Technologie</strong> mit aktiver Community. 
+                Sicheres Gaming-Erlebnis ohne versteckte Kosten!
               </p>
               
-              {selectedFeature === 'legal' && (
+              {selectedFeature === 'community' && (
                 <div className="feature-details">
                   <ul>
-                    <li>🏢 <strong>Dubai LLC:</strong> Vollständig registriert</li>
-                    <li>🎮 <strong>Gaming Only:</strong> Keine Investment-Beratung</li>
-                    <li>🎯 <strong>Entertainment:</strong> Reines Spielerlebnis</li>
-                    <li>💎 <strong>LUNC Rewards:</strong> Gaming-Belohnungen, keine Returns</li>
+                    <li>🔒 <strong>Blockchain Security:</strong> Vollständig transparent</li>
+                    <li>🎮 <strong>Gaming Focus:</strong> Pure Entertainment</li>
+                    <li>👥 <strong>Active Community:</strong> 800+ aktive Spieler</li>
+                    <li>💫 <strong>No Hidden Fees:</strong> Was du siehst, ist was du bekommst</li>
                   </ul>
                 </div>
               )}
@@ -537,67 +538,67 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
       </section>
 
       {/* ===================================
-          ⚖️ LEGAL & COMPLIANCE SECTION
+          ⚖️ TRANSPARENCY SECTION - SIMPLIFIED
           ===================================
           
           Zweck: Vertrauen und Transparenz
-          - Dubai LLC Information
-          - Entertainment Disclaimer
-          - Keine Investment-Beratung
+          - Gaming Focus
+          - Community-driven
+          - Keine Investment-Sprache
       */}
-      <section className="legal-section">
+      <section className="transparency-section">
         <div className="section-container">
           
-          <div className="legal-content">
-            <div className="legal-header">
-              <h3 className="legal-title">
-                🏢 Vollständig konform & transparent
+          <div className="transparency-content">
+            <div className="transparency-header">
+              <h3 className="transparency-title">
+                🛡️ Transparent & Community-focused
               </h3>
-              <p className="legal-subtitle">
-                Sicherheit und Compliance stehen bei uns an erster Stelle
+              <p className="transparency-subtitle">
+                Sicherheit und faire Gaming-Mechaniken stehen bei uns an erster Stelle
               </p>
             </div>
             
-            <div className="legal-grid">
+            <div className="transparency-grid">
               
-              {/* Dubai LLC Information */}
-              <div className="legal-card">
-                <div className="legal-icon">🏢</div>
-                <h4>Dubai LLC</h4>
+              {/* Gaming Focus */}
+              <div className="transparency-card">
+                <div className="transparency-icon">🎮</div>
+                <h4>Pure Gaming Experience</h4>
                 <p>
-                  Registrierte Gesellschaft in Dubai, UAE. 
-                  Vollständige Compliance mit lokalen Cryptocurrency-Regulierungen.
+                  Virtual Building Empire ist eine Gaming-Plattform für Entertainment-Zwecke. 
+                  Fokus auf Spielspaß und Community-Erlebnis.
                 </p>
               </div>
               
-              {/* Entertainment Focus */}
-              <div className="legal-card">
-                <div className="legal-icon">🎮</div>
-                <h4>Entertainment Only</h4>
+              {/* Blockchain Transparency */}
+              <div className="transparency-card">
+                <div className="transparency-icon">🔒</div>
+                <h4>Blockchain Transparency</h4>
                 <p>
-                  Virtual Building Empire ist eine Gaming-Plattform für Entertainment-Zwecke. 
-                  Keine Investment-Beratung oder Finanzdienstleistungen.
+                  Alle Transaktionen und Smart Contracts sind öffentlich einsehbar. 
+                  Vollständige Transparenz durch Blockchain-Technologie.
                 </p>
               </div>
               
               {/* Gaming Rewards */}
-              <div className="legal-card">
-                <div className="legal-icon">💎</div>
-                <h4>Gaming Rewards</h4>
+              <div className="transparency-card">
+                <div className="transparency-icon">💎</div>
+                <h4>Fair Gaming Rewards</h4>
                 <p>
-                  LUNC Token sind Gameplay-Belohnungen für aktive Teilnahme, 
-                  keine Investment-Returns oder garantierte Renditen.
+                  LUNC Token sind performance-basierte Gaming-Belohnungen. 
+                  Keine versteckten Gebühren oder undurchsichtige Mechaniken.
                 </p>
               </div>
             </div>
             
-            {/* Disclaimer */}
-            <div className="legal-disclaimer">
+            {/* Simplified Disclaimer */}
+            <div className="transparency-disclaimer">
               <p>
-                <strong>Wichtiger Hinweis:</strong> Virtual Building Empire ist ein 
-                blockchain-basiertes Spiel für Entertainment-Zwecke. Alle LUNC-Belohnungen 
-                sind Gameplay-Rewards und stellen keine Investment-Beratung dar. 
-                Bitte spiele verantwortungsvoll.
+                <strong>Gaming Disclaimer:</strong> Virtual Building Empire ist ein 
+                blockchain-basiertes Entertainment-Game. Alle LUNC-Belohnungen sind 
+                Gaming-Rewards für aktive Teilnahme. Spiele verantwortungsvoll und 
+                hab Spaß beim Aufbau deines Virtual Building Empire!
               </p>
             </div>
           </div>
@@ -610,27 +611,27 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
           
           Zweck: Final Push zum Gaming-Start
           - Letzter Call-to-Action
-          - Community Links (später)
-          - Contact Information
+          - Community Links
+          - Positive Gaming-focused Messaging
       */}
       <section className="cta-footer">
         <div className="section-container">
           
           <div className="cta-content">
             <h2 className="cta-title">
-              🚀 Bereit für das Character Collection Game der Zukunft?
+              🚀 Ready Player One? Starte dein Building Empire!
             </h2>
             <p className="cta-description">
-              Werde Teil der Virtual Building Empire Community und starte noch heute 
-              dein Gaming-Abenteuer mit LUNC Rewards!
+              Werde Teil einer wachsenden Community von NFT-Sammlern und verdiene täglich 
+              echte LUNC Rewards durch strategisches Gaming!
             </p>
             
             <div className="cta-buttons">
               <button className="cta-button large primary">
-                🎮 Jetzt kostenlosen Account erstellen
+                🎮 Empire jetzt starten
               </button>
               <button className="cta-button large secondary">
-                💬 Community beitreten
+                💬 Community Discord
               </button>
             </div>
             
@@ -638,15 +639,15 @@ const Homepage = ({ familyData, buildingData, userConnected }) => {
             <div className="community-stats">
               <div className="community-stat">
                 <span className="stat-number">{formatNumber(stats.activePlayers)}</span>
-                <span className="stat-label">Aktive Spieler</span>
+                <span className="stat-label">Aktive Builder</span>
               </div>
               <div className="community-stat">
                 <span className="stat-number">{formatNumber(1250)}</span>
-                <span className="stat-label">Charaktere geminted</span>
+                <span className="stat-label">NFTs im Game</span>
               </div>
               <div className="community-stat">
                 <span className="stat-number">{formatNumber(89000)}</span>
-                <span className="stat-label">LUNC ausgezahlt</span>
+                <span className="stat-label">LUNC Rewards</span>
               </div>
             </div>
           </div>
