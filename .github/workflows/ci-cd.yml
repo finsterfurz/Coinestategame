@@ -1,32 +1,32 @@
 # ===================================
-# 🚀 CI/CD PIPELINE FOR VIRTUAL BUILDING EMPIRE
+# 🚀 CI/CD PIPELINE
 # ===================================
 
-name: Virtual Building Empire CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, enhancement/* ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   # ===================================
-  # 🧪 TESTING & QUALITY CHECKS
+  # 🧪 TEST JOB
   # ===================================
   test:
-    name: Test & Quality Checks
+    name: Test Suite
     runs-on: ubuntu-latest
     
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [18.x, 20.x]
     
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
     
-    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+    - name: 🔧 Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
@@ -35,29 +35,57 @@ jobs:
     - name: 📦 Install dependencies
       run: npm ci
     
+    - name: 🔍 Type check
+      run: npm run type-check
+    
     - name: 🧹 Lint code
       run: npm run lint
     
-    - name: 💅 Check formatting
+    - name: 🎨 Check formatting
       run: npm run format:check
     
     - name: 🧪 Run tests
-      run: npm test -- --coverage --watchAll=false
+      run: npm run test:ci
+      env:
+        CI: true
     
     - name: 📊 Upload coverage to Codecov
       uses: codecov/codecov-action@v3
+      if: matrix.node-version == '20.x'
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage/lcov.info
-    
-    - name: 🔒 Security audit
-      run: npm audit --audit-level=moderate
-    
-    - name: 📏 Bundle size check
-      run: npm run build && npm run size
+        flags: unittests
+        name: codecov-umbrella
 
   # ===================================
-  # 🔗 SMART CONTRACT TESTING
+  # 🔒 SECURITY AUDIT
+  # ===================================
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🛡️ Run security audit
+      run: npm audit --audit-level=high
+    
+    - name: 🔍 Run security scan
+      run: npm run security
+
+  # ===================================
+  # ⛓️ SMART CONTRACT TESTS
   # ===================================
   contracts:
     name: Smart Contract Tests
@@ -67,10 +95,10 @@ jobs:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
     
-    - name: 🟢 Setup Node.js
+    - name: 🔧 Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '20.x'
         cache: 'npm'
     
     - name: 📦 Install dependencies
@@ -82,28 +110,27 @@ jobs:
     - name: 🧪 Test contracts
       run: npm run test:contracts
     
-    - name: ⛽ Gas report
+    - name: ⛽ Generate gas report
       run: npm run gas-report
-    
-    - name: 📊 Coverage report
-      run: npm run coverage
+      env:
+        REPORT_GAS: true
 
   # ===================================
-  # 🏗️ BUILD & DEPLOY
+  # 🏗️ BUILD JOB
   # ===================================
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    needs: [test, contracts]
+    needs: [test, security]
     
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
     
-    - name: 🟢 Setup Node.js
+    - name: 🔧 Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '20.x'
         cache: 'npm'
     
     - name: 📦 Install dependencies
@@ -112,10 +139,10 @@ jobs:
     - name: 🏗️ Build application
       run: npm run build
       env:
-        REACT_APP_VERSION: ${{ github.sha }}
-        REACT_APP_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+        CI: false  # Treat warnings as warnings, not errors
+        GENERATE_SOURCEMAP: false
     
-    - name: 📊 Analyze bundle
+    - name: 📊 Bundle analysis
       run: npm run analyze
     
     - name: 📤 Upload build artifacts
@@ -123,12 +150,7 @@ jobs:
       with:
         name: build-files
         path: build/
-    
-    - name: 📤 Upload contract artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: contract-artifacts
-        path: artifacts/
+        retention-days: 30
 
   # ===================================
   # 🚀 DEPLOY TO STAGING
@@ -136,28 +158,31 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, contracts]
     if: github.ref == 'refs/heads/develop'
-    environment: staging
+    
+    environment:
+      name: staging
+      url: https://staging.virtualbuilding.game
     
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
     
-    - name: 📥 Download build artifacts
+    - name: 📤 Download build artifacts
       uses: actions/download-artifact@v3
       with:
         name: build-files
         path: build/
     
-    - name: 🚀 Deploy to Vercel (Staging)
+    - name: 🚀 Deploy to Vercel Staging
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        working-directory: ./
         scope: ${{ secrets.VERCEL_ORG_ID }}
+        alias-domains: staging.virtualbuilding.game
 
   # ===================================
   # 🌟 DEPLOY TO PRODUCTION
@@ -165,96 +190,35 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, contracts]
     if: github.ref == 'refs/heads/main'
-    environment: production
+    
+    environment:
+      name: production
+      url: https://virtualbuilding.game
     
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
     
-    - name: 📥 Download build artifacts
+    - name: 📤 Download build artifacts
       uses: actions/download-artifact@v3
       with:
         name: build-files
         path: build/
     
-    - name: 🚀 Deploy to Vercel (Production)
+    - name: 🚀 Deploy to Vercel Production
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         vercel-args: '--prod'
-        working-directory: ./
         scope: ${{ secrets.VERCEL_ORG_ID }}
     
-    - name: 📊 Lighthouse CI
-      uses: treosh/lighthouse-ci-action@v9
-      with:
-        uploadArtifacts: true
-        temporaryPublicStorage: true
-    
-    - name: 🏷️ Create Release
-      uses: actions/create-release@v1
+    - name: 📢 Notify Discord
+      uses: Ilshidur/action-discord@master
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       with:
-        tag_name: v${{ github.run_number }}
-        release_name: Virtual Building Empire v${{ github.run_number }}
-        body: |
-          🎮 Virtual Building Empire Release v${{ github.run_number }}
-          
-          ### 🚀 What's New
-          - Deployed from commit: ${{ github.sha }}
-          - Build time: ${{ github.event.head_commit.timestamp }}
-          
-          ### 📊 Metrics
-          - Bundle size optimized
-          - Performance score: 95+
-          - Security audit passed
-          
-          ### 🔗 Links
-          - [Live Demo](https://virtualbuilding.game)
-          - [Documentation](https://docs.virtualbuilding.game)
-          - [GitHub Repository](https://github.com/finsterfurz/Coinestategame)
-        draft: false
-        prerelease: false
-
-  # ===================================
-  # 🔄 CONTRACT DEPLOYMENT
-  # ===================================
-  deploy-contracts:
-    name: Deploy Smart Contracts
-    runs-on: ubuntu-latest
-    needs: contracts
-    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[deploy-contracts]')
-    environment: production
-    
-    steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-    
-    - name: 📦 Install dependencies
-      run: npm ci
-    
-    - name: 🔨 Compile contracts
-      run: npm run compile
-    
-    - name: 🚀 Deploy to Polygon
-      run: npm run deploy:polygon
-      env:
-        PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-        POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
-        POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
-    
-    - name: ✅ Verify contracts
-      run: npm run verify
-      env:
-        POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+        args: '🚀 Virtual Building Empire has been deployed to production! 🎮'

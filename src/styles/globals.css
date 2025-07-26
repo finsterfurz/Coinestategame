@@ -1,0 +1,450 @@
+/* ===================================
+   🎨 GLOBAL STYLES
+   =================================== */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* ===================================
+   📱 BASE STYLES
+   =================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #4338ca 100%);
+  background-attachment: fixed;
+  color: #ffffff;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===================================
+   🎯 UTILITY CLASSES
+   =================================== */
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gradient-border {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+  padding: 2px;
+  border-radius: 12px;
+}
+
+.gradient-border-content {
+  background: #1f2937;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* ===================================
+   🎭 ANIMATIONS
+   =================================== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(147, 51, 234, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
+
+/* ===================================
+   🎮 GAME SPECIFIC STYLES
+   =================================== */
+
+.character-card {
+  @apply bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20;
+}
+
+.character-card.legendary {
+  @apply border-yellow-500 hover:border-yellow-400;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+}
+
+.character-card.rare {
+  @apply border-purple-500 hover:border-purple-400;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+}
+
+.character-card.common {
+  @apply border-gray-500 hover:border-gray-400;
+}
+
+.building-floor {
+  @apply bg-gray-700 border border-gray-600 rounded-lg p-4 hover:bg-gray-600 transition-colors duration-200;
+}
+
+.job-slot {
+  @apply bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-blue-500 transition-colors duration-200;
+}
+
+.job-slot.occupied {
+  @apply bg-blue-900 border-blue-500 border-solid;
+}
+
+.lunc-coin {
+  @apply inline-flex items-center justify-center w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full text-xs font-bold text-white;
+}
+
+/* ===================================
+   📱 RESPONSIVE UTILITIES
+   =================================== */
+
+.container-responsive {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.grid-responsive {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+}
+
+.text-responsive {
+  @apply text-sm sm:text-base lg:text-lg;
+}
+
+/* ===================================
+   🎯 BUTTON STYLES
+   =================================== */
+
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-outline {
+  @apply border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white px-6 py-3 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-ghost {
+  @apply text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-lg transition-all duration-200;
+}
+
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-success {
+  @apply bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200;
+}
+
+/* ===================================
+   📝 FORM STYLES
+   =================================== */
+
+.form-input {
+  @apply w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-300 mb-2;
+}
+
+.form-error {
+  @apply text-red-400 text-sm mt-1;
+}
+
+.form-success {
+  @apply text-green-400 text-sm mt-1;
+}
+
+/* ===================================
+   🎨 SPECIAL EFFECTS
+   =================================== */
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+}
+
+.glow-yellow {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.backdrop-blur-custom {
+  backdrop-filter: blur(8px) saturate(180%);
+}
+
+/* ===================================
+   🎯 LOADING STATES
+   =================================== */
+
+.skeleton {
+  @apply bg-gray-300 animate-pulse rounded;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0, 0, 0, 0);
+    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+  40% {
+    color: white;
+    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+  60% {
+    text-shadow: 0.25em 0 0 white, 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+  80%, 100% {
+    text-shadow: 0.25em 0 0 white, 0.5em 0 0 white;
+  }
+}
+
+/* ===================================
+   🌙 DARK MODE OVERRIDES
+   =================================== */
+
+.dark .bg-light {
+  @apply bg-gray-900;
+}
+
+.dark .text-light {
+  @apply text-gray-100;
+}
+
+.dark .border-light {
+  @apply border-gray-700;
+}
+
+/* ===================================
+   📱 MOBILE OPTIMIZATIONS
+   =================================== */
+
+@media (max-width: 640px) {
+  .mobile-padding {
+    @apply px-4 py-2;
+  }
+  
+  .mobile-text {
+    @apply text-sm;
+  }
+  
+  .mobile-hide {
+    @apply hidden;
+  }
+  
+  .mobile-full {
+    @apply w-full;
+  }
+}
+
+/* ===================================
+   🎮 GAME ANIMATIONS
+   =================================== */
+
+.building-animation {
+  animation: buildingGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes buildingGlow {
+  0% {
+    filter: brightness(1) drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+  }
+  100% {
+    filter: brightness(1.2) drop-shadow(0 0 20px rgba(147, 51, 234, 0.8));
+  }
+}
+
+.character-mint-animation {
+  animation: characterSpawn 0.8s ease-out;
+}
+
+@keyframes characterSpawn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-10deg);
+  }
+  60% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.lunc-earn-animation {
+  animation: luncFloat 2s ease-out;
+}
+
+@keyframes luncFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* ===================================
+   🎯 ACCESSIBILITY
+   =================================== */
+
+.focus-visible:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-900;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===================================
+   🎨 PRINT STYLES
+   =================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
