@@ -1,0 +1,100 @@
+# ===================================
+# 🔒 SECURITY SCANNING WORKFLOW
+# ===================================
+
+name: Security Scan
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ===================================
+  # 🛡️ DEPENDENCY SCANNING
+  # ===================================
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔍 Run npm audit
+      run: npm audit --audit-level=moderate
+    
+    - name: 🔍 Snyk security scan
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=medium
+
+  # ===================================
+  # 🔒 CODE SECURITY ANALYSIS
+  # ===================================
+  code-scan:
+    name: Code Security Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔍 CodeQL Analysis
+      uses: github/codeql-action/init@v2
+      with:
+        languages: javascript
+    
+    - name: 🔍 Autobuild
+      uses: github/codeql-action/autobuild@v2
+    
+    - name: 🔍 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  # ===================================
+  # 🔐 SMART CONTRACT SECURITY
+  # ===================================
+  contract-security:
+    name: Smart Contract Security
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔨 Compile contracts
+      run: npm run compile
+    
+    - name: 🔍 Slither analysis
+      uses: crytic/slither-action@v0.3.0
+      with:
+        target: 'contracts/'
+        slither-args: '--print human-summary'
+    
+    - name: 🔍 Mythril analysis
+      run: |
+        pip install mythril
+        myth analyze contracts/ --solv 0.8.19

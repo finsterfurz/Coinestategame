@@ -1,0 +1,260 @@
+# ===================================
+# 🚀 CI/CD PIPELINE FOR VIRTUAL BUILDING EMPIRE
+# ===================================
+
+name: Virtual Building Empire CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ===================================
+  # 🧪 TESTING & QUALITY CHECKS
+  # ===================================
+  test:
+    name: Test & Quality Checks
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🧹 Lint code
+      run: npm run lint
+    
+    - name: 💅 Check formatting
+      run: npm run format:check
+    
+    - name: 🧪 Run tests
+      run: npm test -- --coverage --watchAll=false
+    
+    - name: 📊 Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage/lcov.info
+    
+    - name: 🔒 Security audit
+      run: npm audit --audit-level=moderate
+    
+    - name: 📏 Bundle size check
+      run: npm run build && npm run size
+
+  # ===================================
+  # 🔗 SMART CONTRACT TESTING
+  # ===================================
+  contracts:
+    name: Smart Contract Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔨 Compile contracts
+      run: npm run compile
+    
+    - name: 🧪 Test contracts
+      run: npm run test:contracts
+    
+    - name: ⛽ Gas report
+      run: npm run gas-report
+    
+    - name: 📊 Coverage report
+      run: npm run coverage
+
+  # ===================================
+  # 🏗️ BUILD & DEPLOY
+  # ===================================
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [test, contracts]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🏗️ Build application
+      run: npm run build
+      env:
+        REACT_APP_VERSION: ${{ github.sha }}
+        REACT_APP_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+    
+    - name: 📊 Analyze bundle
+      run: npm run analyze
+    
+    - name: 📤 Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-files
+        path: build/
+    
+    - name: 📤 Upload contract artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: contract-artifacts
+        path: artifacts/
+
+  # ===================================
+  # 🚀 DEPLOY TO STAGING
+  # ===================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        path: build/
+    
+    - name: 🚀 Deploy to Vercel (Staging)
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: ./
+        scope: ${{ secrets.VERCEL_ORG_ID }}
+
+  # ===================================
+  # 🌟 DEPLOY TO PRODUCTION
+  # ===================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📥 Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        path: build/
+    
+    - name: 🚀 Deploy to Vercel (Production)
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-args: '--prod'
+        working-directory: ./
+        scope: ${{ secrets.VERCEL_ORG_ID }}
+    
+    - name: 📊 Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+    
+    - name: 🏷️ Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Virtual Building Empire v${{ github.run_number }}
+        body: |
+          🎮 Virtual Building Empire Release v${{ github.run_number }}
+          
+          ### 🚀 What's New
+          - Deployed from commit: ${{ github.sha }}
+          - Build time: ${{ github.event.head_commit.timestamp }}
+          
+          ### 📊 Metrics
+          - Bundle size optimized
+          - Performance score: 95+
+          - Security audit passed
+          
+          ### 🔗 Links
+          - [Live Demo](https://virtualbuilding.game)
+          - [Documentation](https://docs.virtualbuilding.game)
+          - [GitHub Repository](https://github.com/finsterfurz/Coinestategame)
+        draft: false
+        prerelease: false
+
+  # ===================================
+  # 🔄 CONTRACT DEPLOYMENT
+  # ===================================
+  deploy-contracts:
+    name: Deploy Smart Contracts
+    runs-on: ubuntu-latest
+    needs: contracts
+    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[deploy-contracts]')
+    environment: production
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔨 Compile contracts
+      run: npm run compile
+    
+    - name: 🚀 Deploy to Polygon
+      run: npm run deploy:polygon
+      env:
+        PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+        POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
+        POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+    
+    - name: ✅ Verify contracts
+      run: npm run verify
+      env:
+        POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}

@@ -1,0 +1,95 @@
+{
+  "short_name": "VBE Game",
+  "name": "Virtual Building Empire - Web3 Gaming Platform",
+  "description": "Collect NFT characters, manage buildings, and earn LUNC rewards in this immersive Web3 gaming experience.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#4f46e5",
+  "background_color": "#1e293b",
+  "categories": ["games", "entertainment", "finance"],
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "de-DE",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "screenshots/homepage.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Virtual Building Empire Homepage"
+    },
+    {
+      "src": "screenshots/family.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Character Family Management"
+    },
+    {
+      "src": "screenshots/building.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "25-Floor Building Overview"
+    },
+    {
+      "src": "screenshots/marketplace.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "NFT Character Marketplace"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mint Characters",
+      "short_name": "Mint",
+      "description": "Create new NFT characters",
+      "url": "/mint",
+      "icons": [{ "src": "icons/mint-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Family Management",
+      "short_name": "Family",
+      "description": "Manage your character family",
+      "url": "/family",
+      "icons": [{ "src": "icons/family-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Building Overview",
+      "short_name": "Building",
+      "description": "Manage your virtual building",
+      "url": "/building",
+      "icons": [{ "src": "icons/building-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Marketplace",
+      "short_name": "Market",
+      "description": "Trade NFT characters",
+      "url": "/marketplace",
+      "icons": [{ "src": "icons/marketplace-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-new"
+  }
+}
