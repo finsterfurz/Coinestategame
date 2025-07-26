@@ -6,7 +6,8 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"
+        "distDir": "build",
+        "framework": "create-react-app"
       }
     }
   ],
@@ -25,17 +26,19 @@
   "env": {
     "REACT_APP_NAME": "Virtual Building Empire",
     "REACT_APP_VERSION": "2.0.0",
-    "GENERATE_SOURCEMAP": "false"
+    "GENERATE_SOURCEMAP": "false",
+    "SKIP_PREFLIGHT_CHECK": "true"
   },
   "build": {
     "env": {
-      "GENERATE_SOURCEMAP": "false"
+      "GENERATE_SOURCEMAP": "false",
+      "SKIP_PREFLIGHT_CHECK": "true"
     }
   },
-  "installCommand": "npm install --production=false",
+  "installCommand": "npm ci --only=production",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "framework": "create-react-app",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./src ./public ./package.json",
   "cleanUrls": true,
   "trailingSlash": false
 }
