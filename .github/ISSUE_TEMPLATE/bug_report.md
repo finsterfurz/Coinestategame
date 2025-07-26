@@ -1,9 +1,9 @@
 ---
-name: 🐛 Bug Report
-about: Create a report to help us improve Virtual Building Empire
+name: Bug Report
+about: Report a bug to help us improve
 title: '[BUG] '
 labels: 'bug'
-assignees: 'finsterfurz'
+assignees: ''
 ---
 
 ## 🐛 Bug Description
@@ -18,41 +18,30 @@ A clear and concise description of what the bug is.
 ## ✅ Expected Behavior
 A clear and concise description of what you expected to happen.
 
-## 📱 Screenshots
+## ❌ Actual Behavior
+A clear and concise description of what actually happened.
+
+## 📱 Environment
+- **OS**: [e.g. Windows 10, macOS Big Sur, Ubuntu 20.04]
+- **Browser**: [e.g. Chrome 91, Firefox 89, Safari 14]
+- **Wallet**: [e.g. MetaMask 10.1.1, WalletConnect]
+- **Network**: [e.g. Ethereum Mainnet, Polygon, Local]
+- **App Version**: [e.g. v3.0.0]
+
+## 📸 Screenshots
 If applicable, add screenshots to help explain your problem.
 
-## 🌐 Environment
-**Desktop:**
- - OS: [e.g. Windows 10, macOS Big Sur]
- - Browser: [e.g. Chrome 100, Firefox 99]
- - Version: [e.g. 22]
+## 🔍 Additional Context
+- Error messages from browser console
+- Network requests that failed
+- Wallet connection issues
+- Smart contract interaction problems
 
-**Mobile:**
- - Device: [e.g. iPhone 13, Samsung Galaxy S21]
- - OS: [e.g. iOS 15.1, Android 12]
- - Browser: [e.g. Safari, Chrome]
- - Version: [e.g. 22]
+## 🎯 Possible Solution
+If you have ideas on how to fix this, please describe them here.
 
-**Web3:**
- - Wallet: [e.g. MetaMask, WalletConnect]
- - Network: [e.g. Ethereum, Polygon]
- - Version: [e.g. 10.16.1]
-
-## 🎮 Game State
-- Characters owned: [e.g. 5]
-- Current LUNC balance: [e.g. 1,250]
-- Building efficiency: [e.g. 78%]
-- Last action performed: [e.g. minted character, assigned job]
-
-## 📝 Additional Context
-Add any other context about the problem here.
-
-## 🔗 Error Logs
-If applicable, paste any error messages from the browser console:
-
-```
-Paste error logs here
-```
-
-## ✋ Possible Solution
-If you have ideas on how to fix the issue, please share them here.
+## 📋 Checklist
+- [ ] I have searched existing issues to make sure this is not a duplicate
+- [ ] I have provided all the required information above
+- [ ] I have tested this on the latest version
+- [ ] I have included relevant screenshots/console logs

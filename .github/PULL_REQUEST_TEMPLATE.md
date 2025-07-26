@@ -1,115 +1,177 @@
-## 🎮 Virtual Building Empire - Pull Request
+## 📋 Pull Request Description
 
-### 📝 Description
-Brief description of what this PR accomplishes.
+### 🎯 What does this PR do?
+Brief description of the changes made in this PR.
 
-### 🎯 Type of Change
+### 🔗 Related Issues
+Fixes #[issue number]
+Closes #[issue number]
+References #[issue number]
+
+---
+
+## 🛠 Changes Made
+
+### 📁 Files Changed
+- [ ] Frontend components
+- [ ] Smart contracts
+- [ ] Documentation
+- [ ] Tests
+- [ ] Configuration
+- [ ] Dependencies
+
+### 🎨 Type of Change
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
 - [ ] ✨ New feature (non-breaking change which adds functionality)
 - [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] 📚 Documentation update
-- [ ] 🎨 Style/UI update
-- [ ] ⚡ Performance improvement
-- [ ] 🔒 Security update
-- [ ] 🔧 Maintenance/refactoring
-
-### 🎮 Game Components Affected
-- [ ] Character System
-- [ ] Building Management
-- [ ] Job Assignment
-- [ ] LUNC Rewards
-- [ ] Marketplace
-- [ ] Web3 Integration
-- [ ] User Interface
-- [ ] Smart Contracts
-- [ ] Backend/API
-- [ ] Testing
-- [ ] Documentation
-
-### 🧪 Testing
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] Smart contract tests added/updated
-- [ ] Manual testing completed
-- [ ] Cross-browser testing completed
-- [ ] Mobile testing completed
-
-### 📱 Browser Testing
-- [ ] Chrome
-- [ ] Firefox
-- [ ] Safari
-- [ ] Edge
-- [ ] Mobile Safari
-- [ ] Mobile Chrome
-
-### 🔗 Web3 Testing
-- [ ] MetaMask integration
-- [ ] Wallet connection/disconnection
-- [ ] Transaction handling
-- [ ] Network switching
-- [ ] Error handling
-
-### 📊 Performance Impact
-- [ ] Bundle size checked
-- [ ] Performance metrics validated
-- [ ] Memory usage optimized
-- [ ] Loading times improved
-- [ ] No performance regression
-
-### 🔒 Security Checklist
-- [ ] Input validation implemented
-- [ ] XSS protection verified
-- [ ] Smart contract security reviewed
-- [ ] Sensitive data handling verified
-- [ ] Authentication/authorization checked
-
-### 📸 Screenshots/GIFs
-<!-- Add screenshots or GIFs showing the changes -->
-
-### 🔗 Related Issues
-<!-- Link to related issues -->
-Closes #(issue_number)
-Related to #(issue_number)
-
-### 🚀 Deployment Notes
-<!-- Any special deployment considerations -->
-- [ ] Environment variables updated
-- [ ] Database migrations needed
-- [ ] Smart contracts need deployment
-- [ ] Third-party service configuration
-- [ ] Cache invalidation required
-
-### ✅ Pre-merge Checklist
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Comments added to complex code
-- [ ] Documentation updated
-- [ ] No console.log statements left
-- [ ] TypeScript types properly defined
-- [ ] Error handling implemented
-- [ ] Loading states handled
-- [ ] Responsive design verified
-
-### 🎯 Game Balance Impact
-<!-- If this affects game mechanics -->
-- [ ] LUNC earning rates
-- [ ] Character abilities
-- [ ] Building efficiency
-- [ ] Marketplace economics
-- [ ] Minting costs
-- [ ] Job assignments
-
-### 📋 Additional Notes
-<!-- Any additional information, context, or considerations -->
-
-### 🎉 Demo
-<!-- Link to demo deployment if available -->
-Demo URL: <!-- Add demo URL here -->
+- [ ] 🎨 Style/UI improvements
+- [ ] ⚡ Performance improvements
+- [ ] 🔧 Refactoring
+- [ ] 🧪 Test additions/improvements
 
 ---
 
-**Reviewer Notes:**
-- Please test the Web3 functionality with a test wallet
-- Verify responsive design on mobile devices
-- Check console for any errors or warnings
-- Validate game balance isn't negatively affected
+## 🧪 Testing
+
+### ✅ Tests Added/Updated
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] E2E tests
+- [ ] Smart contract tests
+- [ ] Manual testing completed
+
+### 🔧 Testing Instructions
+1. Pull this branch
+2. Run `npm install`
+3. Run `npm test`
+4. Test specific functionality:
+   - [ ] Step 1
+   - [ ] Step 2
+   - [ ] Step 3
+
+---
+
+## 🎮 Game Impact
+
+### 🎯 Gameplay Changes
+- [ ] Character system updates
+- [ ] Building mechanics changes
+- [ ] LUNC rewards modifications
+- [ ] Marketplace functionality
+- [ ] New game features
+
+### ⛓️ Smart Contract Changes
+- [ ] New contracts deployed
+- [ ] Existing contracts modified
+- [ ] Gas optimizations
+- [ ] Security improvements
+- [ ] Multi-chain considerations
+
+---
+
+## 📸 Screenshots/Demo
+
+### Before
+[Add screenshots or description of current behavior]
+
+### After
+[Add screenshots or description of new behavior]
+
+### Demo
+[Link to live demo or video if applicable]
+
+---
+
+## 📊 Performance Impact
+
+- [ ] Bundle size: Decreased / Increased / No change
+- [ ] Load time: Faster / Slower / No change
+- [ ] Gas costs: Lower / Higher / No change
+- [ ] Memory usage: Lower / Higher / No change
+
+---
+
+## 🔒 Security Considerations
+
+- [ ] No security implications
+- [ ] Security review completed
+- [ ] New security measures added
+- [ ] Potential security risks identified (explain below)
+
+**Security Notes**: [If applicable]
+
+---
+
+## 📱 Browser/Device Testing
+
+- [ ] Chrome (Desktop)
+- [ ] Firefox (Desktop)
+- [ ] Safari (Desktop)
+- [ ] Chrome (Mobile)
+- [ ] Safari (Mobile)
+- [ ] Edge
+
+---
+
+## 🌐 Web3 Testing
+
+- [ ] MetaMask
+- [ ] WalletConnect
+- [ ] Ethereum Mainnet
+- [ ] Polygon
+- [ ] BSC
+- [ ] Testnets
+
+---
+
+## ✅ Pre-merge Checklist
+
+### 📋 Code Quality
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] TypeScript types are properly defined
+- [ ] No console.log statements in production code
+- [ ] Error handling is implemented
+
+### 🧪 Testing
+- [ ] All tests pass
+- [ ] New tests cover the changes
+- [ ] Manual testing completed
+- [ ] Cross-browser testing done
+
+### 📚 Documentation
+- [ ] README updated (if needed)
+- [ ] Code comments added for complex logic
+- [ ] API documentation updated
+- [ ] CHANGELOG updated
+
+### 🔧 Technical
+- [ ] No breaking changes (or properly documented)
+- [ ] Dependencies updated appropriately
+- [ ] Environment variables documented
+- [ ] Migration scripts provided (if needed)
+
+---
+
+## 🔄 Post-merge Tasks
+
+- [ ] Deploy to staging
+- [ ] Update live documentation
+- [ ] Notify community of changes
+- [ ] Monitor error rates
+- [ ] Update smart contracts (if needed)
+
+---
+
+## 💬 Additional Notes
+
+[Any additional information that reviewers should know]
+
+---
+
+## 🙏 Reviewers
+
+@finsterfurz - Please review
+
+**Ready for review! 🚀**

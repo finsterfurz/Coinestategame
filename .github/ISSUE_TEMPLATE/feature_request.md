@@ -1,78 +1,62 @@
 ---
-name: ✨ Feature Request
-about: Suggest an idea for Virtual Building Empire
+name: Feature Request
+about: Suggest an idea for this project
 title: '[FEATURE] '
 labels: 'enhancement'
-assignees: 'finsterfurz'
+assignees: ''
 ---
 
-## ✨ Feature Description
-A clear and concise description of the feature you'd like to see.
+## 🚀 Feature Description
+A clear and concise description of what the feature is.
 
 ## 🎯 Problem Statement
-Is your feature request related to a problem? Please describe.
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+What problem does this feature solve? Is your feature request related to a problem?
 
 ## 💡 Proposed Solution
-Describe the solution you'd like.
 A clear and concise description of what you want to happen.
 
-## 🔄 Alternative Solutions
-Describe alternatives you've considered.
-A clear and concise description of any alternative solutions or features you've considered.
+## 🔄 User Story
+As a [type of user], I want [goal] so that [benefit].
 
-## 🎮 Game Impact
-How would this feature impact the game experience?
-- [ ] Character System
-- [ ] Building Management
-- [ ] Job Assignment
-- [ ] LUNC Rewards
-- [ ] Marketplace
-- [ ] Web3 Integration
-- [ ] User Interface
-- [ ] Performance
-- [ ] Other: ___________
+## 🎨 Design Ideas
+If you have mockups, wireframes, or design ideas, please share them here.
 
-## 🏗️ Implementation Ideas
-If you have ideas on how this could be implemented:
-
-**Frontend Changes:**
-- [ ] New React components
-- [ ] UI/UX improvements
-- [ ] State management updates
-- [ ] API integrations
-
-**Smart Contract Changes:**
-- [ ] New contract functions
-- [ ] Token mechanics
-- [ ] Game logic updates
-- [ ] Security considerations
-
-**Infrastructure:**
-- [ ] Database changes
-- [ ] Server-side logic
-- [ ] Third-party integrations
-- [ ] Performance optimizations
+## 🔧 Technical Considerations
+- What components/systems would this affect?
+- Are there any technical challenges?
+- Integration with existing features?
 
 ## 📊 Success Metrics
 How would we measure the success of this feature?
-- User engagement metrics
-- Game balance improvements
-- Technical performance
-- Community feedback
 
-## 🚧 Complexity Estimate
-- [ ] Simple (few hours)
-- [ ] Medium (few days)
-- [ ] Complex (few weeks)
-- [ ] Major (few months)
+## 🎮 Game Impact
+- How does this enhance the gaming experience?
+- Does it affect character progression?
+- Impact on LUNC rewards system?
+- Marketplace considerations?
 
-## 📝 Additional Context
-Add any other context, mockups, or screenshots about the feature request here.
+## 🌐 Web3 Considerations
+- Smart contract changes needed?
+- Gas optimization concerns?
+- Multi-chain compatibility?
+- Security implications?
 
-## 🌟 Priority
-How important is this feature to you?
-- [ ] Critical (game-breaking without it)
-- [ ] High (significantly improves experience)
-- [ ] Medium (nice to have)
-- [ ] Low (minor enhancement)
+## 📱 Alternatives Considered
+A clear and concise description of any alternative solutions you've considered.
+
+## 🔗 Related Issues
+Link any related issues or feature requests.
+
+## 📋 Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] Criterion 3
+
+## 🚨 Priority
+- [ ] Low - Nice to have
+- [ ] Medium - Would improve UX
+- [ ] High - Critical for user experience
+- [ ] Urgent - Blocking other features
+
+## 📚 Additional Context
+Add any other context, research, or references about the feature request here.
