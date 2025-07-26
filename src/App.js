@@ -133,6 +133,12 @@ function App() {
     
     if (connected) {
       console.log('Wallet connected:', address);
+      // Show welcome message for new connections
+      if (address && !userConnected) {
+        setTimeout(() => {
+          alert('🎉 Wallet erfolgreich verbunden! Willkommen im Virtual Building Empire!');
+        }, 500);
+      }
     } else {
       console.log('Wallet disconnected');
     }
@@ -150,8 +156,20 @@ function App() {
       };
     });
     
-    // Show success message (optional)
+    // Update LUNC balance for new family bonus
+    const familyBonus = newCharacters.length * 50; // 50 LUNC per new character
+    setFamilyData(prev => ({
+      ...prev,
+      totalLunc: prev.totalLunc + familyBonus
+    }));
+    
+    // Show success message
     console.log('New characters minted:', newCharacters);
+    if (newCharacters.length > 0) {
+      setTimeout(() => {
+        alert(`🎉 ${newCharacters.length} neue Charaktere geminted! +${familyBonus} LUNC Familie Bonus!`);
+      }, 1000);
+    }
   };
 
   // Update family data (for character management)
@@ -165,6 +183,27 @@ function App() {
         : prev.dailyEarnings
     }));
   };
+
+  // Daily LUNC Collection (automatic)
+  useEffect(() => {
+    const collectDailyLunc = () => {
+      if (familyData.characters.length > 0) {
+        const workingCharacters = familyData.characters.filter(char => char.working);
+        const dailyEarnings = workingCharacters.reduce((sum, char) => sum + char.dailyEarnings, 0);
+        
+        if (dailyEarnings > 0) {
+          setFamilyData(prev => ({
+            ...prev,
+            totalLunc: prev.totalLunc + Math.floor(dailyEarnings * 0.1) // 10% of daily earnings every minute for demo
+          }));
+        }
+      }
+    };
+
+    // Collect LUNC every minute for demo purposes
+    const interval = setInterval(collectDailyLunc, 60000);
+    return () => clearInterval(interval);
+  }, [familyData.characters]);
 
   return (
     <Router>
@@ -312,6 +351,55 @@ function App() {
         )}
 
         {/* ===================================
+            🎮 FLOATING ACTION BUTTON
+            =================================== */}
+        {userConnected && familyData.characters.length > 0 && (
+          <div className="floating-actions">
+            <div className="fab-container">
+              <button 
+                className="fab main-fab"
+                onClick={() => setShowMinting(true)}
+                title="Neue Charaktere minten"
+              >
+                🎯
+              </button>
+              
+              <div className="fab-menu">
+                <Link to="/family" className="fab mini-fab" title="Familie verwalten">
+                  👥
+                </Link>
+                <Link to="/jobs" className="fab mini-fab" title="Jobs zuweisen">
+                  💼
+                </Link>
+                <Link to="/marketplace" className="fab mini-fab" title="Marktplatz">
+                  🛒
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ===================================
+            📊 PERFORMANCE STATS (DEBUG)
+            =================================== */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="debug-stats">
+            <div className="debug-item">
+              <span>Familie: {familyData.familySize}</span>
+            </div>
+            <div className="debug-item">
+              <span>LUNC: {familyData.totalLunc}</span>
+            </div>
+            <div className="debug-item">
+              <span>Arbeitend: {familyData.characters.filter(c => c.working).length}</span>
+            </div>
+            <div className="debug-item">
+              <span>Wallet: {userConnected ? '🟢' : '🔴'}</span>
+            </div>
+          </div>
+        )}
+
+        {/* ===================================
             📄 FOOTER
             =================================== */}
         <footer className="game-footer">
@@ -319,16 +407,18 @@ function App() {
             <div className="footer-info">
               <p>🎮 <strong>Virtual Building Empire</strong> - Character Collection Game</p>
               <p>🏢 Dubai LLC | 🎯 Entertainment Only | 💎 LUNC Gaming Rewards</p>
+              <p>👨‍👩‍👧‍👦 Sammle NFT-Charaktere und baue dein eigenes Gebäude-Imperium auf!</p>
             </div>
             <div className="footer-links">
               <a href="#whitepaper" className="footer-link">📖 Whitepaper</a>
               <a href="#legal" className="footer-link">⚖️ Legal</a>
               <a href="#support" className="footer-link">🆘 Support</a>
+              <a href="#roadmap" className="footer-link">🗺️ Roadmap</a>
             </div>
             <div className="footer-disclaimer">
               <small>
                 Keine Investment-Beratung | LUNC Rewards sind Gameplay-Belohnungen | 
-                Spiele verantwortungsvoll
+                Spiele verantwortungsvoll | Web3 Gaming Experience
               </small>
             </div>
           </div>

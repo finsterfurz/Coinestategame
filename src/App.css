@@ -299,7 +299,114 @@ body {
 }
 
 /* ===================================
-   6. FOOTER
+   6. FLOATING ACTION BUTTONS
+   =================================== */
+
+.floating-actions {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+
+.fab-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.fab {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.main-fab {
+  background: linear-gradient(145deg, var(--accent-color), #ffcd3c);
+  color: var(--dark-gray);
+  width: 70px;
+  height: 70px;
+  font-size: 2rem;
+  z-index: 1001;
+}
+
+.main-fab:hover {
+  background: linear-gradient(145deg, #ffcd3c, var(--accent-color));
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 8px 30px rgba(255, 193, 7, 0.4);
+}
+
+.fab-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.fab-container:hover .fab-menu {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mini-fab {
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
+  background: var(--white);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.mini-fab:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  transform: scale(1.1);
+  text-decoration: none;
+}
+
+/* ===================================
+   7. DEBUG STATS (DEVELOPMENT)
+   =================================== */
+
+.debug-stats {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #00ff00;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid #00ff00;
+}
+
+.debug-item {
+  display: flex;
+  justify-content: space-between;
+  min-width: 120px;
+}
+
+/* ===================================
+   8. FOOTER
    =================================== */
 
 .game-footer {
@@ -363,7 +470,7 @@ body {
 }
 
 /* ===================================
-   7. UTILITY CLASSES
+   9. UTILITY CLASSES
    =================================== */
 
 /* Button Styles */
@@ -471,11 +578,35 @@ body {
 }
 
 /* ===================================
-   8. RESPONSIVE DESIGN
+   10. RESPONSIVE DESIGN
    =================================== */
 
-/* Tablet */
+/* Mobile Floating Actions */
 @media (max-width: 768px) {
+  .floating-actions {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .main-fab {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  
+  .mini-fab {
+    width: 45px;
+    height: 45px;
+    font-size: 1rem;
+  }
+  
+  .debug-stats {
+    top: 110px;
+    left: 10px;
+    font-size: 0.7rem;
+    padding: 8px 12px;
+  }
+
   .nav-container {
     flex-wrap: wrap;
     height: auto;
@@ -498,7 +629,7 @@ body {
   }
   
   .game-container {
-    margin-top: 100px; /* Mehr Platz für wrapped Navigation */
+    margin-top: 100px;
   }
   
   .footer-content {
@@ -529,7 +660,7 @@ body {
   }
   
   .logo-link span {
-    display: none; /* Hide text on very small screens */
+    display: none;
   }
   
   .nav-right {
@@ -563,13 +694,13 @@ body {
 }
 
 /* ===================================
-   9. ACCESSIBILITY
+   11. ACCESSIBILITY
    =================================== */
 
-/* Focus States */
 .nav-link:focus,
 .btn:focus,
-.modal-close:focus {
+.modal-close:focus,
+.fab:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
@@ -597,28 +728,40 @@ body {
   
   .nav-link:hover,
   .btn:hover,
-  .card:hover {
+  .card:hover,
+  .fab:hover {
     transform: none;
   }
 }
 
 /* ===================================
-   10. DARK MODE SUPPORT (FUTURE)
+   12. DARK MODE SUPPORT (FUTURE)
    =================================== */
 
 @media (prefers-color-scheme: dark) {
-  /* Future dark mode implementation */
-  /* Currently keeping light theme for consistency */
+  .debug-stats {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #00ff00;
+    backdrop-filter: blur(10px);
+  }
+  
+  .mini-fab {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-color: var(--primary-color);
+  }
 }
 
 /* ===================================
-   11. PRINT STYLES
+   13. PRINT STYLES
    =================================== */
 
 @media print {
   .game-nav,
   .game-footer,
-  .minting-modal-overlay {
+  .minting-modal-overlay,
+  .floating-actions,
+  .debug-stats {
     display: none;
   }
   
