@@ -1,601 +1,208 @@
-// Core game types
+// ===================================
+// 🎯 GLOBAL TYPE DEFINITIONS
+// ===================================
+
 export interface Character {
-  id: string;
+  id: number | string;
   name: string;
-  rarity: 'Common' | 'Rare' | 'Legendary';
+  type: CharacterType;
+  job: string;
   level: number;
-  experience: number;
-  earnings: number;
   happiness: number;
-  productivity: number;
-  department?: Department;
-  jobPosition?: JobPosition;
-  skills: CharacterSkills;
-  traits: CharacterTrait[];
-  createdAt: Date;
-  lastWorked?: Date;
-  isWorking: boolean;
-  image: string;
-  background: string;
-}
-
-export interface CharacterSkills {
-  productivity: number;
-  charisma: number;
-  intelligence: number;
-  luck: number;
-  management: number;
-  creativity: number;
-}
-
-export interface CharacterTrait {
-  id: string;
-  name: string;
-  description: string;
-  effect: TraitEffect;
-  rarity: 'Common' | 'Rare' | 'Legendary';
-}
-
-export interface TraitEffect {
-  type: 'productivity' | 'happiness' | 'earnings' | 'experience';
-  value: number;
-  isPercentage: boolean;
-}
-
-// Building and job types
-export interface Department {
-  id: string;
-  name: string;
-  floor: number;
-  maxCharacters: number;
-  currentCharacters: Character[];
-  baseEarnings: number;
-  efficiencyBonus: number;
-  description: string;
-  requirements: DepartmentRequirement[];
-  upgrades: DepartmentUpgrade[];
-}
-
-export interface DepartmentRequirement {
-  type: 'level' | 'skill' | 'rarity';
-  value: number | string;
-  skill?: keyof CharacterSkills;
-}
-
-export interface DepartmentUpgrade {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  costType: 'lunc' | 'eth';
-  effect: UpgradeEffect;
-  unlocked: boolean;
-  purchased: boolean;
-}
-
-export interface UpgradeEffect {
-  type: 'earnings' | 'capacity' | 'efficiency' | 'happiness';
-  value: number;
-  isPercentage: boolean;
-}
-
-export interface JobPosition {
-  id: string;
-  title: string;
+  working: boolean;
   department: string;
-  salary: number;
-  requirements: JobRequirement[];
-  experience: number;
-  description: string;
+  mintedAt: string;
+  dailyEarnings?: number;
 }
 
-export interface JobRequirement {
-  type: 'level' | 'skill' | 'trait';
-  value: number | string;
-  skill?: keyof CharacterSkills;
-}
+export type CharacterType = 'common' | 'rare' | 'legendary';
 
-// Game state and economy
-export interface GameState {
-  user: User;
+export interface FamilyData {
   characters: Character[];
-  building: Building;
-  economy: Economy;
-  quests: Quest[];
-  achievements: Achievement[];
-  social: SocialData;
-  settings: GameSettings;
-  lastUpdate: Date;
-}
-
-export interface User {
-  id: string;
-  walletAddress: string;
-  username: string;
-  level: number;
-  experience: number;
-  joinDate: Date;
-  statistics: UserStatistics;
-  preferences: UserPreferences;
-}
-
-export interface UserStatistics {
-  totalCharacters: number;
-  totalEarnings: number;
-  totalPlayTime: number;
-  achievementsUnlocked: number;
-  questsCompleted: number;
-  buildingEfficiency: number;
-  averageCharacterLevel: number;
-}
-
-export interface UserPreferences {
-  theme: 'light' | 'dark' | 'auto';
-  notifications: boolean;
-  autoCollect: boolean;
-  sound: boolean;
-  language: string;
-}
-
-export interface Building {
-  id: string;
-  name: string;
-  level: number;
-  totalFloors: number;
-  departments: Department[];
-  upgrades: BuildingUpgrade[];
-  decorations: Decoration[];
-  efficiency: number;
-  happiness: number;
-}
-
-export interface BuildingUpgrade {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  costType: 'lunc' | 'eth';
-  effect: UpgradeEffect;
-  category: 'infrastructure' | 'efficiency' | 'capacity' | 'aesthetics';
-  unlocked: boolean;
-  purchased: boolean;
-}
-
-export interface Decoration {
-  id: string;
-  name: string;
-  description: string;
-  effect: DecorationEffect;
-  rarity: 'Common' | 'Rare' | 'Legendary';
-  cost: number;
-  image: string;
-}
-
-export interface DecorationEffect {
-  type: 'happiness' | 'productivity' | 'efficiency';
-  value: number;
-  scope: 'global' | 'department' | 'floor';
-}
-
-export interface Economy {
-  luncBalance: number;
-  ethBalance: number;
+  totalLunc: number;
+  familySize: number;
   dailyEarnings: number;
-  totalEarnings: number;
-  marketData: MarketData;
-  transactions: Transaction[];
 }
 
-export interface MarketData {
-  luncPrice: number;
-  ethPrice: number;
-  characterFloorPrice: number;
-  averageCharacterPrice: number;
-  totalVolume24h: number;
-  priceHistory: PricePoint[];
+export interface BuildingData {
+  totalEmployees: number;
+  availableJobs: number;
+  buildingEfficiency: number;
+  dailyLuncPool: number;
 }
 
-export interface PricePoint {
-  timestamp: Date;
-  price: number;
-  volume: number;
-}
-
-export interface Transaction {
-  id: string;
-  type: 'mint' | 'buy' | 'sell' | 'earnings' | 'upgrade';
-  amount: number;
-  currency: 'lunc' | 'eth';
-  timestamp: Date;
-  description: string;
-  txHash?: string;
-}
-
-// Quest and achievement system
-export interface Quest {
-  id: string;
-  title: string;
-  description: string;
-  type: 'daily' | 'weekly' | 'monthly' | 'special';
-  category: 'collection' | 'building' | 'social' | 'earning';
-  requirements: QuestRequirement[];
-  rewards: QuestReward[];
-  progress: QuestProgress;
-  deadline?: Date;
-  isCompleted: boolean;
-  isActive: boolean;
-}
-
-export interface QuestRequirement {
-  id: string;
-  description: string;
-  type: 'count' | 'threshold' | 'duration';
-  target: number;
-  current: number;
-  category: string;
-}
-
-export interface QuestReward {
-  type: 'lunc' | 'experience' | 'character' | 'decoration' | 'title';
-  amount: number;
-  description: string;
-}
-
-export interface QuestProgress {
-  started: Date;
-  lastUpdate: Date;
-  completion: number; // 0-100
-}
-
-export interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  category: 'collector' | 'builder' | 'socialite' | 'entrepreneur';
-  tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
-  requirements: AchievementRequirement[];
-  rewards: QuestReward[];
-  isUnlocked: boolean;
-  unlockedDate?: Date;
-  progress: number; // 0-100
-  isSecret: boolean;
-}
-
-export interface AchievementRequirement {
-  type: 'total' | 'streak' | 'single';
-  description: string;
-  target: number;
-  current: number;
-}
-
-// Social and multiplayer features
-export interface SocialData {
-  friends: Friend[];
-  leaderboards: Leaderboard[];
-  guilds: Guild[];
-  messages: Message[];
-  notifications: Notification[];
-}
-
-export interface Friend {
-  userId: string;
-  username: string;
-  level: number;
-  buildingName: string;
-  isOnline: boolean;
-  lastSeen: Date;
-  friendshipDate: Date;
-}
-
-export interface Leaderboard {
-  id: string;
-  name: string;
-  category: 'earnings' | 'characters' | 'level' | 'efficiency';
-  timeframe: 'daily' | 'weekly' | 'monthly' | 'alltime';
-  entries: LeaderboardEntry[];
-  lastUpdate: Date;
-}
-
-export interface LeaderboardEntry {
-  rank: number;
-  userId: string;
-  username: string;
-  value: number;
-  change: number; // rank change from previous period
-}
-
-export interface Guild {
-  id: string;
-  name: string;
-  description: string;
-  memberCount: number;
-  maxMembers: number;
-  level: number;
-  requirements: GuildRequirement[];
-  benefits: GuildBenefit[];
-  joinedDate?: Date;
-  role?: 'member' | 'officer' | 'leader';
-}
-
-export interface GuildRequirement {
-  type: 'level' | 'characters' | 'earnings';
-  value: number;
-}
-
-export interface GuildBenefit {
-  type: 'earnings_bonus' | 'experience_bonus' | 'discount';
-  value: number;
-  description: string;
-}
-
-export interface Message {
-  id: string;
-  senderId: string;
-  senderName: string;
-  recipientId: string;
-  content: string;
-  timestamp: Date;
-  isRead: boolean;
-  type: 'private' | 'guild' | 'system';
-}
-
-export interface Notification {
-  id: string;
-  type: 'quest_complete' | 'achievement' | 'friend_request' | 'earnings' | 'system';
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionUrl?: string;
-  icon?: string;
-}
-
-// Marketplace and trading
-export interface MarketplaceListing {
-  id: string;
-  characterId: string;
-  character: Character;
-  sellerId: string;
-  sellerName: string;
-  price: number;
-  currency: 'lunc' | 'eth';
-  listedDate: Date;
-  expiryDate: Date;
-  status: 'active' | 'sold' | 'cancelled' | 'expired';
-  views: number;
-  watchers: string[];
-}
-
-export interface MarketplaceFilter {
-  rarity?: ('Common' | 'Rare' | 'Legendary')[];
-  priceMin?: number;
-  priceMax?: number;
-  levelMin?: number;
-  levelMax?: number;
-  departments?: string[];
-  sortBy: 'price' | 'level' | 'rarity' | 'date';
-  sortOrder: 'asc' | 'desc';
-}
-
-export interface TradeHistory {
-  id: string;
-  characterId: string;
-  buyerId: string;
-  sellerId: string;
-  price: number;
-  currency: 'lunc' | 'eth';
-  timestamp: Date;
-  txHash: string;
-}
-
-// Events and analytics
-export interface GameEvent {
-  id: string;
-  type: string;
-  data: Record<string, any>;
-  timestamp: Date;
-  userId: string;
-}
-
-export interface AnalyticsData {
-  earningsHistory: EarningsPoint[];
-  characterDistribution: DistributionPoint[];
-  performanceMetrics: PerformanceMetric[];
-  playTimeStats: PlayTimeStats;
-  goalProgress: GoalProgress[];
-}
-
-export interface EarningsPoint {
-  date: Date;
-  amount: number;
-  source: 'jobs' | 'quests' | 'bonuses' | 'trading';
-}
-
-export interface DistributionPoint {
-  category: string;
-  value: number;
-  percentage: number;
-}
-
-export interface PerformanceMetric {
-  name: string;
-  value: number;
-  change: number;
-  trend: 'up' | 'down' | 'stable';
-}
-
-export interface PlayTimeStats {
-  totalMinutes: number;
-  averageSession: number;
-  longestSession: number;
-  activeDays: number;
-  streak: number;
-}
-
-export interface GoalProgress {
-  id: string;
-  name: string;
-  current: number;
-  target: number;
-  deadline?: Date;
-}
-
-// API and service types
-export interface APIResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  timestamp: Date;
-}
-
-export interface PaginatedResponse<T> extends APIResponse<T[]> {
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
-
-export interface Web3Transaction {
-  hash: string;
-  from: string;
-  to: string;
-  value: string;
-  gasUsed: string;
-  gasPrice: string;
-  status: 'pending' | 'confirmed' | 'failed';
-  timestamp: Date;
-}
-
-// Game settings and configuration
 export interface GameSettings {
-  version: string;
-  maintenance: boolean;
-  features: FeatureFlags;
-  economy: EconomySettings;
-  limits: GameLimits;
+  soundEnabled: boolean;
+  notificationsEnabled: boolean;
+  autoCollectLunc: boolean;
+  darkMode: boolean;
 }
 
-export interface FeatureFlags {
-  marketplace: boolean;
-  social: boolean;
-  quests: boolean;
-  analytics: boolean;
-  multichain: boolean;
-  aiFeatures: boolean;
-}
-
-export interface EconomySettings {
-  baseEarningsRate: number;
-  rarityMultipliers: Record<string, number>;
-  maxDailyEarnings: number;
-  marketplaceFee: number;
-  characterMintPrice: Record<string, number>;
-}
-
-export interface GameLimits {
-  maxCharacters: number;
-  maxFriends: number;
-  maxDailyQuests: number;
-  maxBuildingUpgrades: number;
-}
-
-// Weather and environmental effects
-export interface WeatherData {
-  current: WeatherCondition;
-  forecast: WeatherCondition[];
-  effects: WeatherEffect[];
-}
-
-export interface WeatherCondition {
-  type: 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'snowy';
-  temperature: number;
-  humidity: number;
-  timestamp: Date;
-  duration: number; // in hours
-}
-
-export interface WeatherEffect {
-  type: 'mood' | 'productivity' | 'creativity' | 'focus';
-  value: number;
-  isPercentage: boolean;
-  description: string;
-}
-
-// AI and machine learning types
-export interface AIRecommendation {
-  id: string;
-  type: 'job_assignment' | 'character_purchase' | 'building_upgrade' | 'quest_focus';
-  title: string;
-  description: string;
-  confidence: number; // 0-100
-  expectedBenefit: number;
-  reasoning: string[];
-  actionData: Record<string, any>;
-}
-
-export interface PredictionData {
-  type: 'earnings' | 'efficiency' | 'market_price';
-  timeframe: 'day' | 'week' | 'month';
-  current: number;
-  predicted: number;
-  confidence: number;
-  factors: PredictionFactor[];
-}
-
-export interface PredictionFactor {
-  name: string;
-  impact: number; // -100 to 100
-  description: string;
-}
-
-// Component props types
-export interface ComponentProps {
-  className?: string;
-  children?: React.ReactNode;
-}
-
-export interface CharacterCardProps extends ComponentProps {
-  character: Character;
-  onClick?: (character: Character) => void;
-  isSelected?: boolean;
-  showDetails?: boolean;
-  actions?: CharacterAction[];
-}
-
-export interface CharacterAction {
-  label: string;
-  icon?: string;
-  onClick: (character: Character) => void;
-  disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'danger';
-}
-
-// Hook return types
-export interface UseGameStateReturn {
-  gameState: GameState;
-  updateGameState: (updates: Partial<GameState>) => void;
+export interface WalletState {
+  isConnected: boolean;
+  address: string | null;
+  balance: string | null;
+  networkId: number | null;
   isLoading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
 }
 
-export interface UseWeb3Return {
-  account: string | null;
-  chainId: number | null;
+export interface NotificationData {
+  count?: number;
+  bonus?: number;
+  character?: string;
+  job?: string;
+  amount?: number;
+  level?: number;
+  price?: number;
+}
+
+export type NotificationType = 
+  | 'mint_success' 
+  | 'job_assigned' 
+  | 'lunc_earned' 
+  | 'level_up' 
+  | 'marketplace_buy' 
+  | 'marketplace_sell';
+
+export interface GameConstants {
+  MINT_COSTS: Record<CharacterType, number>;
+  RARITY_CHANCES: Record<CharacterType, number>;
+  MAX_FAMILY_SIZE: number;
+  BUILDING_FLOORS: number;
+  DAILY_LUNC_COLLECTION_HOUR: number;
+}
+
+// ===================================
+// 🎮 COMPONENT PROP INTERFACES
+// ===================================
+
+export interface AppProps {
+  // Main App component props can be defined here if needed
+}
+
+export interface HomepageProps {
+  familyData: FamilyData;
+  buildingData: BuildingData;
+  userConnected: boolean;
+  walletAddress?: string;
+}
+
+export interface FamilyManagementProps {
+  familyData: FamilyData;
+  setFamilyData: (data: FamilyData) => void;
+  userConnected: boolean;
+  onJobAssign?: (character: string, job: string) => void;
+}
+
+export interface BuildingOverviewProps {
+  buildingData: BuildingData;
+  setBuildingData: (data: BuildingData) => void;
+  familyCharacters: Character[];
+}
+
+export interface JobAssignmentProps {
+  characters: Character[];
+  setFamilyData: (data: FamilyData) => void;
+  buildingData: BuildingData;
+  onJobAssign?: (character: string, job: string) => void;
+}
+
+export interface MarketplaceProps {
+  familyData: FamilyData;
+  setFamilyData: (data: FamilyData) => void;
+  userConnected: boolean;
+  onTrade?: (type: 'buy' | 'sell', character: string, price: number) => void;
+}
+
+export interface CharacterMintingProps {
+  onCharacterMinted: (characters: Character[]) => void;
+  userWallet: string | null;
+  luncBalance: number;
+}
+
+export interface WalletConnectionProps {
+  onConnectionChange?: (connected: boolean, address: string | null) => void;
+  isLoading?: boolean;
+  error?: string | null;
+}
+
+export interface LuncWalletProps {
+  balance: number;
+  formatted?: string;
+  showDetails?: boolean;
+  onBalanceClick?: () => void;
+}
+
+export interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+}
+
+// ===================================
+// 🎲 HOOK INTERFACES
+// ===================================
+
+export interface UseLocalStorageReturn<T> {
+  0: T;
+  1: React.Dispatch<React.SetStateAction<T>>;
+}
+
+export interface UseWeb3ConnectionReturn {
   isConnected: boolean;
+  account: string | null;
   connect: () => Promise<void>;
   disconnect: () => void;
-  switchChain: (chainId: number) => Promise<void>;
-  sendTransaction: (tx: any) => Promise<Web3Transaction>;
-}
-
-export interface UseAnalyticsReturn {
-  data: AnalyticsData | null;
   isLoading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
-  trackEvent: (event: GameEvent) => void;
 }
+
+export interface UseGameNotificationsReturn {
+  notifyCharacterMinted: (characters: Character[]) => void;
+  notifyLuncEarned: (amount: number) => void;
+  notifyJobAssigned: (character: string, job: string) => void;
+  notifyMarketplaceTrade: (type: 'buy' | 'sell', character: string, price: number) => void;
+  requestPermission: () => Promise<void>;
+}
+
+// ===================================
+// 🎯 UTILITY TYPES
+// ===================================
+
+export type SetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
+
+export type EventHandler<T = Element> = React.MouseEventHandler<T>;
+
+export type KeyboardEventHandler<T = Element> = React.KeyboardEventHandler<T>;
+
+export type ChangeEventHandler<T = Element> = React.ChangeEventHandler<T>;
+
+export type FormEventHandler<T = Element> = React.FormEventHandler<T>;
+
+// ===================================
+// 🔧 ENVIRONMENT TYPES
+// ===================================
+
+declare global {
+  interface Window {
+    ethereum?: {
+      isMetaMask?: boolean;
+      request: (args: { method: string; params?: any[] }) => Promise<any>;
+      on: (event: string, callback: (...args: any[]) => void) => void;
+      removeListener: (event: string, callback: (...args: any[]) => void) => void;
+      selectedAddress: string | null;
+      networkVersion: string;
+    };
+  }
+
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'production' | 'test';
+      REACT_APP_VERSION?: string;
+      REACT_APP_BUILD_TIME?: string;
+    }
+  }
+}
+
+export {};
