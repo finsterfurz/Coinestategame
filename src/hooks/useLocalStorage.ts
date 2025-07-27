@@ -1,28 +1,146 @@
-import { useState, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 // ===================================
-// 💾 LOCAL STORAGE HOOK TYPES
+// 💾 ENHANCED LOCAL STORAGE HOOK (TypeScript)
 // ===================================
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
-interface UseLocalStorageOptions {
-  serializer?: {
-    parse: (value: string) => any;
-    stringify: (value: any) => string;
+/**
+ * Enhanced useLocalStorage hook with TypeScript support
+ * @param key - The localStorage key (will be prefixed with 'vbe_')
+ * @param initialValue - The initial value if no stored value exists
+ * @returns A tuple containing the stored value and a setter function
+ */
+function useLocalStorage<T>(
+  key: string, 
+  initialValue: T
+): [T, SetValue<T>] {
+  
+  // Get stored value or return initialValue
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === 'undefined') {
+      // Server-side rendering support
+      return initialValue;
+    }
+
+    try {
+      const item = window.localStorage.getItem(`vbe_${key}`);
+      if (item === null) {
+        return initialValue;
+      }
+      
+      // Parse stored json or return initialValue if parsing fails
+      const parsedItem = JSON.parse(item);
+      return parsedItem as T;
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  // Return a wrapped version of useState's setter function that persists the new value to localStorage
+  const setValue: SetValue<T> = (value) => {
+    try {
+      // Allow value to be a function so we have the same API as useState
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      
+      // Save state
+      setStoredValue(valueToStore);
+      
+      // Save to local storage (only in browser environment)
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(`vbe_${key}`, JSON.stringify(valueToStore));
+        
+        // Dispatch a custom event to notify other components
+        window.dispatchEvent(new CustomEvent('localStorageChange', {
+          detail: { key: `vbe_${key}`, value: valueToStore }
+        }));
+      }
+    } catch (error) {
+      console.warn(`Error setting localStorage key "${key}":`, error);
+    }
   };
-  logger?: (error: Error, key: string) => void;
+
+  // Listen for changes to the localStorage key (from other tabs/windows)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleStorageChange = (e: StorageEvent): void => {
+      if (e.key === `vbe_${key}` && e.newValue !== null) {
+        try {
+          const newValue = JSON.parse(e.newValue) as T;
+          setStoredValue(newValue);
+        } catch (error) {
+          console.warn(`Error parsing localStorage change for key "${key}":`, error);
+        }
+      }
+    };
+
+    // Also listen for custom events (same-tab changes)
+    const handleCustomStorageChange = (e: CustomEvent): void => {
+      if (e.detail?.key === `vbe_${key}`) {
+        setStoredValue(e.detail.value as T);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageChange', handleCustomStorageChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageChange', handleCustomStorageChange as EventListener);
+    };
+  }, [key]);
+
+  // Cleanup function to remove the item from localStorage
+  const removeValue = (): void => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(`vbe_${key}`);
+        setStoredValue(initialValue);
+      }
+    } catch (error) {
+      console.warn(`Error removing localStorage key "${key}":`, error);
+    }
+  };
+
+  return [storedValue, setValue];
 }
 
-// ===================================
-// 💾 ENHANCED LOCAL STORAGE HOOK
-// ===================================
+export default useLocalStorage;
 
-/**
- * Custom hook for managing localStorage with TypeScript support
- * @param key - The localStorage key (will be prefixed with 'vbe_')
- * @param initialValue - Initial value if no stored value exists
- * @param options - Additional options for serialization and error handling
- * @returns [storedValue, setValue] tuple similar to useState
- */
-function useLocalStorage<T>(\n  key: string,\n  initialValue: T,\n  options: UseLocalStorageOptions = {}\n): [T, SetValue<T>] {\n  const {\n    serializer = {\n      parse: JSON.parse,\n      stringify: JSON.stringify\n    },\n    logger = console.warn\n  } = options;\n\n  const prefixedKey = `vbe_${key}`;\n\n  // Get stored value or return initialValue\n  const [storedValue, setStoredValue] = useState<T>(() => {\n    if (typeof window === 'undefined') {\n      return initialValue;\n    }\n\n    try {\n      const item = window.localStorage.getItem(prefixedKey);\n      return item ? serializer.parse(item) : initialValue;\n    } catch (error) {\n      logger(\n        error instanceof Error \n          ? error \n          : new Error(`Failed to parse localStorage key \"${key}\"`), \n        key\n      );\n      return initialValue;\n    }\n  });\n\n  // Enhanced setValue function with better error handling\n  const setValue: SetValue<T> = useCallback(\n    (value: T | ((prevState: T) => T)) => {\n      if (typeof window === 'undefined') {\n        logger(new Error('localStorage not available'), key);\n        return;\n      }\n\n      try {\n        // Allow value to be a function so we have the same API as useState\n        const valueToStore = value instanceof Function ? value(storedValue) : value;\n        \n        // Save state\n        setStoredValue(valueToStore);\n        \n        // Save to local storage\n        window.localStorage.setItem(prefixedKey, serializer.stringify(valueToStore));\n      } catch (error) {\n        logger(\n          error instanceof Error \n            ? error \n            : new Error(`Failed to set localStorage key \"${key}\"`), \n          key\n        );\n      }\n    },\n    [key, prefixedKey, serializer, storedValue, logger]\n  );\n\n  // Remove value from localStorage\n  const removeValue = useCallback(() => {\n    if (typeof window === 'undefined') {\n      return;\n    }\n\n    try {\n      window.localStorage.removeItem(prefixedKey);\n      setStoredValue(initialValue);\n    } catch (error) {\n      logger(\n        error instanceof Error \n          ? error \n          : new Error(`Failed to remove localStorage key \"${key}\"`), \n        key\n      );\n    }\n  }, [key, prefixedKey, initialValue, logger]);\n\n  // Listen for changes to the localStorage key from other windows/tabs\n  useEffect(() => {\n    if (typeof window === 'undefined') {\n      return;\n    }\n\n    const handleStorageChange = (e: StorageEvent) => {\n      if (e.key === prefixedKey) {\n        if (e.newValue === null) {\n          // Key was removed\n          setStoredValue(initialValue);\n        } else {\n          try {\n            setStoredValue(serializer.parse(e.newValue));\n          } catch (error) {\n            logger(\n              error instanceof Error \n                ? error \n                : new Error(`Failed to parse storage change for key \"${key}\"`), \n              key\n            );\n          }\n        }\n      }\n    };\n\n    window.addEventListener('storage', handleStorageChange);\n    return () => window.removeEventListener('storage', handleStorageChange);\n  }, [key, prefixedKey, initialValue, serializer, logger]);\n\n  return [storedValue, setValue];\n}\n\n// ===================================\n// 💾 ADDITIONAL UTILITY HOOKS\n// ===================================\n\n/**\n * Hook for localStorage with session-based cleanup\n * Values are automatically removed when the browser session ends\n */\nexport function useSessionLocalStorage<T>(\n  key: string, \n  initialValue: T\n): [T, SetValue<T>] {\n  const sessionKey = `session_${key}`;\n  return useLocalStorage(sessionKey, initialValue);\n}\n\n/**\n * Hook for localStorage with automatic expiration\n */\nexport function useTemporaryLocalStorage<T>(\n  key: string,\n  initialValue: T,\n  ttlMinutes: number = 60\n): [T, SetValue<T>] {\n  const expiryKey = `${key}_expiry`;\n  const [storedValue, setStoredValue] = useLocalStorage(key, initialValue);\n  const [expiry, setExpiry] = useLocalStorage(expiryKey, 0);\n\n  // Check if value has expired\n  useEffect(() => {\n    const now = Date.now();\n    if (expiry > 0 && now > expiry) {\n      // Value has expired, reset to initial value\n      setStoredValue(initialValue);\n      setExpiry(0);\n    }\n  }, [expiry, initialValue, setStoredValue, setExpiry]);\n\n  // Enhanced setValue that sets expiry time\n  const setValueWithExpiry: SetValue<T> = useCallback(\n    (value: T | ((prevState: T) => T)) => {\n      setStoredValue(value);\n      const expiryTime = Date.now() + (ttlMinutes * 60 * 1000);\n      setExpiry(expiryTime);\n    },\n    [setStoredValue, setExpiry, ttlMinutes]\n  );\n\n  return [storedValue, setValueWithExpiry];\n}\n\nexport default useLocalStorage;
+// Export additional utility functions
+export const clearAllGameData = (): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const keys = Object.keys(window.localStorage);
+    const gameKeys = keys.filter(key => key.startsWith('vbe_'));
+    
+    gameKeys.forEach(key => {
+      window.localStorage.removeItem(key);
+    });
+    
+    console.log(`Cleared ${gameKeys.length} game data entries from localStorage`);
+  } catch (error) {
+    console.warn('Error clearing game data:', error);
+  }
+};
+
+export const getStorageSize = (): number => {
+  if (typeof window === 'undefined') return 0;
+  
+  try {
+    const keys = Object.keys(window.localStorage);
+    const gameKeys = keys.filter(key => key.startsWith('vbe_'));
+    
+    return gameKeys.reduce((size, key) => {
+      const value = window.localStorage.getItem(key);
+      return size + (value ? value.length : 0);
+    }, 0);
+  } catch (error) {
+    console.warn('Error calculating storage size:', error);
+    return 0;
+  }
+};
