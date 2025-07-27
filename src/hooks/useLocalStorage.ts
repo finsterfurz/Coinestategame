@@ -1,0 +1,28 @@
+import { useState, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
+
+// ===================================
+// 💾 LOCAL STORAGE HOOK TYPES
+// ===================================
+
+type SetValue<T> = Dispatch<SetStateAction<T>>;
+
+interface UseLocalStorageOptions {
+  serializer?: {
+    parse: (value: string) => any;
+    stringify: (value: any) => string;
+  };
+  logger?: (error: Error, key: string) => void;
+}
+
+// ===================================
+// 💾 ENHANCED LOCAL STORAGE HOOK
+// ===================================
+
+/**
+ * Custom hook for managing localStorage with TypeScript support
+ * @param key - The localStorage key (will be prefixed with 'vbe_')
+ * @param initialValue - Initial value if no stored value exists
+ * @param options - Additional options for serialization and error handling
+ * @returns [storedValue, setValue] tuple similar to useState
+ */
+function useLocalStorage<T>(\n  key: string,\n  initialValue: T,\n  options: UseLocalStorageOptions = {}\n): [T, SetValue<T>] {\n  const {\n    serializer = {\n      parse: JSON.parse,\n      stringify: JSON.stringify\n    },\n    logger = console.warn\n  } = options;\n\n  const prefixedKey = `vbe_${key}`;\n\n  // Get stored value or return initialValue\n  const [storedValue, setStoredValue] = useState<T>(() => {\n    if (typeof window === 'undefined') {\n      return initialValue;\n    }\n\n    try {\n      const item = window.localStorage.getItem(prefixedKey);\n      return item ? serializer.parse(item) : initialValue;\n    } catch (error) {\n      logger(\n        error instanceof Error \n          ? error \n          : new Error(`Failed to parse localStorage key \"${key}\"`), \n        key\n      );\n      return initialValue;\n    }\n  });\n\n  // Enhanced setValue function with better error handling\n  const setValue: SetValue<T> = useCallback(\n    (value: T | ((prevState: T) => T)) => {\n      if (typeof window === 'undefined') {\n        logger(new Error('localStorage not available'), key);\n        return;\n      }\n\n      try {\n        // Allow value to be a function so we have the same API as useState\n        const valueToStore = value instanceof Function ? value(storedValue) : value;\n        \n        // Save state\n        setStoredValue(valueToStore);\n        \n        // Save to local storage\n        window.localStorage.setItem(prefixedKey, serializer.stringify(valueToStore));\n      } catch (error) {\n        logger(\n          error instanceof Error \n            ? error \n            : new Error(`Failed to set localStorage key \"${key}\"`), \n          key\n        );\n      }\n    },\n    [key, prefixedKey, serializer, storedValue, logger]\n  );\n\n  // Remove value from localStorage\n  const removeValue = useCallback(() => {\n    if (typeof window === 'undefined') {\n      return;\n    }\n\n    try {\n      window.localStorage.removeItem(prefixedKey);\n      setStoredValue(initialValue);\n    } catch (error) {\n      logger(\n        error instanceof Error \n          ? error \n          : new Error(`Failed to remove localStorage key \"${key}\"`), \n        key\n      );\n    }\n  }, [key, prefixedKey, initialValue, logger]);\n\n  // Listen for changes to the localStorage key from other windows/tabs\n  useEffect(() => {\n    if (typeof window === 'undefined') {\n      return;\n    }\n\n    const handleStorageChange = (e: StorageEvent) => {\n      if (e.key === prefixedKey) {\n        if (e.newValue === null) {\n          // Key was removed\n          setStoredValue(initialValue);\n        } else {\n          try {\n            setStoredValue(serializer.parse(e.newValue));\n          } catch (error) {\n            logger(\n              error instanceof Error \n                ? error \n                : new Error(`Failed to parse storage change for key \"${key}\"`), \n              key\n            );\n          }\n        }\n      }\n    };\n\n    window.addEventListener('storage', handleStorageChange);\n    return () => window.removeEventListener('storage', handleStorageChange);\n  }, [key, prefixedKey, initialValue, serializer, logger]);\n\n  return [storedValue, setValue];\n}\n\n// ===================================\n// 💾 ADDITIONAL UTILITY HOOKS\n// ===================================\n\n/**\n * Hook for localStorage with session-based cleanup\n * Values are automatically removed when the browser session ends\n */\nexport function useSessionLocalStorage<T>(\n  key: string, \n  initialValue: T\n): [T, SetValue<T>] {\n  const sessionKey = `session_${key}`;\n  return useLocalStorage(sessionKey, initialValue);\n}\n\n/**\n * Hook for localStorage with automatic expiration\n */\nexport function useTemporaryLocalStorage<T>(\n  key: string,\n  initialValue: T,\n  ttlMinutes: number = 60\n): [T, SetValue<T>] {\n  const expiryKey = `${key}_expiry`;\n  const [storedValue, setStoredValue] = useLocalStorage(key, initialValue);\n  const [expiry, setExpiry] = useLocalStorage(expiryKey, 0);\n\n  // Check if value has expired\n  useEffect(() => {\n    const now = Date.now();\n    if (expiry > 0 && now > expiry) {\n      // Value has expired, reset to initial value\n      setStoredValue(initialValue);\n      setExpiry(0);\n    }\n  }, [expiry, initialValue, setStoredValue, setExpiry]);\n\n  // Enhanced setValue that sets expiry time\n  const setValueWithExpiry: SetValue<T> = useCallback(\n    (value: T | ((prevState: T) => T)) => {\n      setStoredValue(value);\n      const expiryTime = Date.now() + (ttlMinutes * 60 * 1000);\n      setExpiry(expiryTime);\n    },\n    [setStoredValue, setExpiry, ttlMinutes]\n  );\n\n  return [storedValue, setValueWithExpiry];\n}\n\nexport default useLocalStorage;
