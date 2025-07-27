@@ -1,7 +1,7 @@
 {
   "short_name": "VBE Game",
-  "name": "Virtual Building Empire - Web3 Gaming Platform",
-  "description": "Collect NFT characters, manage buildings, and earn LUNC rewards in this immersive Web3 gaming experience.",
+  "name": "Virtual Building Empire - NFT Game",
+  "description": "Collect NFT characters, build your virtual empire, and earn real LUNC rewards in this innovative Web3 gaming experience.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -11,85 +11,165 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#4f46e5",
-  "background_color": "#1e293b",
-  "categories": ["games", "entertainment", "finance"],
+  "theme_color": "#667eea",
+  "background_color": "#1a1a2e",
   "orientation": "portrait-primary",
   "scope": "/",
-  "lang": "de-DE",
+  "lang": "en-US",
   "dir": "ltr",
   "prefer_related_applications": false,
+  "categories": [
+    "games",
+    "entertainment",
+    "finance",
+    "productivity"
+  ],
   "screenshots": [
     {
-      "src": "screenshots/homepage.png",
-      "sizes": "1280x720",
+      "src": "screenshots/desktop-home.png",
       "type": "image/png",
+      "sizes": "1280x720",
+      "platform": "wide",
       "label": "Virtual Building Empire Homepage"
     },
     {
-      "src": "screenshots/family.png",
-      "sizes": "1280x720",
+      "src": "screenshots/mobile-character.png", 
       "type": "image/png",
-      "label": "Character Family Management"
+      "sizes": "375x812",
+      "platform": "narrow",
+      "label": "Character Collection on Mobile"
     },
     {
-      "src": "screenshots/building.png",
+      "src": "screenshots/desktop-marketplace.png",
+      "type": "image/png", 
       "sizes": "1280x720",
-      "type": "image/png",
-      "label": "25-Floor Building Overview"
-    },
-    {
-      "src": "screenshots/marketplace.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "label": "NFT Character Marketplace"
+      "platform": "wide",
+      "label": "NFT Marketplace"
     }
   ],
   "shortcuts": [
     {
       "name": "Mint Characters",
       "short_name": "Mint",
-      "description": "Create new NFT characters",
+      "description": "Mint new NFT characters",
       "url": "/mint",
-      "icons": [{ "src": "icons/mint-96x96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Family Management",
-      "short_name": "Family",
-      "description": "Manage your character family",
-      "url": "/family",
-      "icons": [{ "src": "icons/family-96x96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Building Overview",
-      "short_name": "Building",
-      "description": "Manage your virtual building",
-      "url": "/building",
-      "icons": [{ "src": "icons/building-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "icons/mint-icon-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Marketplace",
       "short_name": "Market",
-      "description": "Trade NFT characters",
+      "description": "Trade characters with other players",
       "url": "/marketplace",
-      "icons": [{ "src": "icons/marketplace-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "icons/market-icon-96.png",
+          "sizes": "96x96", 
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "My Family",
+      "short_name": "Family",
+      "description": "Manage your character collection",
+      "url": "/family",
+      "icons": [
+        {
+          "src": "icons/family-icon-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Building",
+      "short_name": "Building", 
+      "description": "View your 25-story virtual building",
+      "url": "/building",
+      "icons": [
+        {
+          "src": "icons/building-icon-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
-  "related_applications": [],
+  "protocol_handlers": [
+    {
+      "protocol": "web+vbe",
+      "url": "/handle?type=%s"
+    }
+  ],
   "edge_side_panel": {
     "preferred_width": 400
   },
+  "handle_links": "preferred",
   "launch_handler": {
-    "client_mode": "navigate-new"
-  }
+    "client_mode": "focus-existing"
+  },
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "screenshot",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "application/json": [".json"],
+        "text/csv": [".csv"]
+      }
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/notes/new"
+  },
+  "id": "virtual-building-empire",
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.virtualbuilding.empire",
+      "id": "com.virtualbuilding.empire"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/virtual-building-empire/id123456789"
+    }
+  ],
+  "iarc_rating_id": "e58c174a-81d2-5c3c-32cc-34b8de4a52e9"
 }
