@@ -29,13 +29,16 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-window": "^1.8.8",
     "typescript": "^4.7.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
@@ -45,8 +48,14 @@
     "format:check": "prettier --check src/**/*.{ts,tsx,js,jsx,css,md}",
     "analyze": "npm run build && npx source-map-explorer 'build/static/js/*.js'",
     "clean": "rm -rf build dist node_modules/.cache",
+    "cleanup-duplicates": "node scripts/cleanup-duplicates.js",
     "dev": "npm start",
-    "preview": "npm run build && npx serve -s build"
+    "preview": "npm run build && npx serve -s build",
+    "audit:fix": "npm audit fix",
+    "deps:update": "npm update",
+    "deps:check": "npm outdated",
+    "security": "npm audit",
+    "ci": "npm ci && npm run type-check && npm run lint && npm run test:coverage && npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -73,6 +82,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-window": "^1.8.5",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -82,5 +92,21 @@
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/index.tsx",
+      "!src/reportWebVitals.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
   }
 }
