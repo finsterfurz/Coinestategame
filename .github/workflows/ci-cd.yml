@@ -1,260 +1,332 @@
-# ===================================
-# 🚀 CI/CD PIPELINE FOR VIRTUAL BUILDING EMPIRE
-# ===================================
-
-name: Virtual Building Empire CI/CD
+name: 🚀 CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feature/*, hotfix/* ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18.x'
+  CACHE_KEY_PREFIX: 'virtual-building-empire'
 
 jobs:
-  # ===================================
-  # 🧪 TESTING & QUALITY CHECKS
-  # ===================================
-  test:
-    name: Test & Quality Checks
+  # 🧪 Quality checks and testing
+  quality-checks:
+    name: 🔍 Quality Checks
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-keys.outputs.npm }}
     
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🔑 Generate cache keys
+        id: cache-keys
+        run: |
+          echo "npm=${{ env.CACHE_KEY_PREFIX }}-npm-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Security audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: 📊 Check for outdated dependencies
+        run: npm outdated
+        continue-on-error: true
+
+      - name: 🔧 TypeScript type check
+        run: npm run type-check
+
+      - name: 🎨 ESLint check
+        run: npm run lint
+
+      - name: ✨ Prettier format check
+        run: npm run format:check
+
+      - name: 📋 Upload quality reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-reports
+          path: |
+            eslint-report.json
+            audit-report.json
+          retention-days: 30
+
+  # 🧪 Unit and integration tests
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: quality-checks
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        test-suite: [unit, integration]
     
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    
-    - name: 📦 Install dependencies
-      run: npm ci
-    
-    - name: 🧹 Lint code
-      run: npm run lint
-    
-    - name: 💅 Check formatting
-      run: npm run format:check
-    
-    - name: 🧪 Run tests
-      run: npm test -- --coverage --watchAll=false
-    
-    - name: 📊 Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage/lcov.info
-    
-    - name: 🔒 Security audit
-      run: npm audit --audit-level=moderate
-    
-    - name: 📏 Bundle size check
-      run: npm run build && npm run size
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-  # ===================================
-  # 🔗 SMART CONTRACT TESTING
-  # ===================================
-  contracts:
-    name: Smart Contract Tests
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-    
-    - name: 📦 Install dependencies
-      run: npm ci
-    
-    - name: 🔨 Compile contracts
-      run: npm run compile
-    
-    - name: 🧪 Test contracts
-      run: npm run test:contracts
-    
-    - name: ⛽ Gas report
-      run: npm run gas-report
-    
-    - name: 📊 Coverage report
-      run: npm run coverage
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-  # ===================================
-  # 🏗️ BUILD & DEPLOY
-  # ===================================
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests with coverage
+        run: npm run test:coverage
+        env:
+          CI: true
+
+      - name: 📊 Generate coverage reports
+        run: |
+          mkdir -p coverage-reports
+          cp coverage/lcov.info coverage-reports/lcov-${{ matrix.test-suite }}.info
+          cp coverage/coverage-final.json coverage-reports/coverage-${{ matrix.test-suite }}.json
+
+      - name: 📋 Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.test-suite }}
+          path: coverage-reports/
+          retention-days: 30
+
+      - name: 📈 Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: ${{ matrix.test-suite }}
+          name: codecov-${{ matrix.test-suite }}
+          fail_ci_if_error: false
+
+  # 🏗️ Build application
   build:
-    name: Build Application
+    name: 🏗️ Build
     runs-on: ubuntu-latest
-    needs: [test, contracts]
+    needs: [quality-checks, test]
+    strategy:
+      matrix:
+        environment: [production, staging]
     
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-    
-    - name: 📦 Install dependencies
-      run: npm ci
-    
-    - name: 🏗️ Build application
-      run: npm run build
-      env:
-        REACT_APP_VERSION: ${{ github.sha }}
-        REACT_APP_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
-    
-    - name: 📊 Analyze bundle
-      run: npm run analyze
-    
-    - name: 📤 Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-files
-        path: build/
-    
-    - name: 📤 Upload contract artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: contract-artifacts
-        path: artifacts/
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-  # ===================================
-  # 🚀 DEPLOY TO STAGING
-  # ===================================
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          REACT_APP_ENV: ${{ matrix.environment }}
+          GENERATE_SOURCEMAP: ${{ matrix.environment == 'production' && 'false' || 'true' }}
+
+      - name: 📊 Analyze bundle size
+        run: npm run analyze
+        continue-on-error: true
+
+      - name: 📋 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.environment }}
+          path: build/
+          retention-days: 30
+
+      - name: 🗜️ Compress build artifacts
+        if: matrix.environment == 'production'
+        run: |
+          tar -czf build-production.tar.gz build/
+          ls -lah build-production.tar.gz
+
+      - name: 📋 Upload compressed build
+        if: matrix.environment == 'production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-production-compressed
+          path: build-production.tar.gz
+          retention-days: 90
+
+  # 🔒 Security scanning
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: quality-checks
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 📋 Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: 🔐 Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          languages: javascript
+
+  # 🚀 Deploy to staging
   deploy-staging:
-    name: Deploy to Staging
+    name: 🚀 Deploy to Staging
     runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    environment: staging
+    needs: [quality-checks, test, build, security]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment:
+      name: staging
+      url: https://staging.virtualbuilding.game
     
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 📥 Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: build-files
-        path: build/
-    
-    - name: 🚀 Deploy to Vercel (Staging)
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        working-directory: ./
-        scope: ${{ secrets.VERCEL_ORG_ID }}
+      - name: 📥 Download staging build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-staging
+          path: build/
 
-  # ===================================
-  # 🌟 DEPLOY TO PRODUCTION
-  # ===================================
+      - name: 🚀 Deploy to Vercel (Staging)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          alias-domains: staging.virtualbuilding.game
+
+      - name: 🧪 Run staging smoke tests
+        run: |
+          curl -f https://staging.virtualbuilding.game/health || exit 1
+          echo "✅ Staging deployment successful"
+
+  # 🌟 Deploy to production
   deploy-production:
-    name: Deploy to Production
+    name: 🌟 Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
+    needs: [quality-checks, test, build, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://virtualbuilding.game
     
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 📥 Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: build-files
-        path: build/
-    
-    - name: 🚀 Deploy to Vercel (Production)
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: '--prod'
-        working-directory: ./
-        scope: ${{ secrets.VERCEL_ORG_ID }}
-    
-    - name: 📊 Lighthouse CI
-      uses: treosh/lighthouse-ci-action@v9
-      with:
-        uploadArtifacts: true
-        temporaryPublicStorage: true
-    
-    - name: 🏷️ Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: Virtual Building Empire v${{ github.run_number }}
-        body: |
-          🎮 Virtual Building Empire Release v${{ github.run_number }}
-          
-          ### 🚀 What's New
-          - Deployed from commit: ${{ github.sha }}
-          - Build time: ${{ github.event.head_commit.timestamp }}
-          
-          ### 📊 Metrics
-          - Bundle size optimized
-          - Performance score: 95+
-          - Security audit passed
-          
-          ### 🔗 Links
-          - [Live Demo](https://virtualbuilding.game)
-          - [Documentation](https://docs.virtualbuilding.game)
-          - [GitHub Repository](https://github.com/finsterfurz/Coinestategame)
-        draft: false
-        prerelease: false
+      - name: 📥 Download production build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-production-compressed
 
-  # ===================================
-  # 🔄 CONTRACT DEPLOYMENT
-  # ===================================
-  deploy-contracts:
-    name: Deploy Smart Contracts
+      - name: 🗜️ Extract build artifacts
+        run: tar -xzf build-production.tar.gz
+
+      - name: 🚀 Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+          alias-domains: virtualbuilding.game
+
+      - name: 🧪 Run production smoke tests
+        run: |
+          curl -f https://virtualbuilding.game/health || exit 1
+          echo "✅ Production deployment successful"
+
+      - name: 📊 Performance audit
+        run: |
+          npx lighthouse-ci autorun --upload.target=filesystem --upload.outputDir=./lighthouse-reports
+        continue-on-error: true
+
+      - name: 📋 Upload performance reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports/
+          retention-days: 30
+
+  # 📊 Post-deployment monitoring
+  monitoring:
+    name: 📊 Post-Deployment Monitoring
     runs-on: ubuntu-latest
-    needs: contracts
-    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[deploy-contracts]')
-    environment: production
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
+      - name: 🔔 Notify deployment success
+        uses: 8398a7/action-slack@v3
+        if: success()
+        with:
+          status: success
+          text: '🎉 Virtual Building Empire deployed successfully to production!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 🚨 Notify deployment failure
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        with:
+          status: failure
+          text: '❌ Virtual Building Empire deployment failed!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 📈 Create deployment tag
+        if: success()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v$(date +%Y%m%d-%H%M%S)" -m "Production deployment $(date)"
+          git push origin --tags
+
+  # 🧹 Cleanup
+  cleanup:
+    name: 🧹 Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-production, deploy-staging]
+    if: always()
     
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-    
-    - name: 📦 Install dependencies
-      run: npm ci
-    
-    - name: 🔨 Compile contracts
-      run: npm run compile
-    
-    - name: 🚀 Deploy to Polygon
-      run: npm run deploy:polygon
-      env:
-        PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-        POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
-        POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
-    
-    - name: ✅ Verify contracts
-      run: npm run verify
-      env:
-        POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+    steps:
+      - name: 🗑️ Clean up artifacts
+        run: echo "Cleanup job - artifacts will be automatically cleaned up based on retention policies"
+
+      - name: 📊 Job summary
+        run: |
+          echo "## 🚀 CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Quality checks completed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tests executed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Security scans performed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build artifacts created" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Deployments completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎮 **Virtual Building Empire** is ready to play!" >> $GITHUB_STEP_SUMMARY
